@@ -11,7 +11,7 @@
  */
 
 const CONFIG = {
-  SHEET_ID: '',   // only needed if this script was NOT created from the Sheet's Extensions > Apps Script menu
+  SHEET_ID: '1FQAGGyGJWJIfFA59wmdcxa4YFOJft4SznMnJJTcQSZY',   // your Registrants sheet; safe to keep even if the script is created from the Sheet's Extensions menu
   SHEET_NAME: 'Registrants',
   GROUP_NAME: 'Reading Group',
   HOST: 'Will Sentance',
