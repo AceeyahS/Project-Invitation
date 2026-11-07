@@ -16,11 +16,11 @@ const CONFIG = {
   GROUP_NAME: 'Reading Group',
   HOST: 'Will Sentance',
   FROM_NAME: 'Reading Group',
-  REPLY_TO: '',                 // e.g. 'you@example.com'
+  REPLY_TO: 'aceeyahsa@gmail.com',   // replies to any email from the script land here
   // Leave blank until the date is confirmed. ISO with offset, e.g. '2026-12-04T18:30:00-08:00'
   EVENT_START: '',
   EVENT_END: '',                // e.g. '2026-12-04T20:30:00-08:00'
-  LOCATION: 'To be confirmed',
+  LOCATION: 'South Park Commons, San Francisco (to be confirmed)',
   MIN_AGE: 13
 };
 
@@ -175,9 +175,9 @@ const first = r => String(r[col('Name') - 1] || '').split(' ')[0] || 'there';
 const whenText = s => s ? Utilities.formatDate(s, Session.getScriptTimeZone(), "EEEE, MMMM d 'at' h:mm a z") : 'to be confirmed';
 
 function sendReceipt(r) {
-  mail(r[col('Email') - 1], 'You’re on the list — ' + CONFIG.GROUP_NAME,
-    'Hi ' + first(r) + ',\n\nWe received your request for a seat at the ' + CONFIG.GROUP_NAME +
-    '. We’ll be in touch once we’ve reviewed everyone.\n\n— ' + CONFIG.HOST);
+  mail(r[col('Email') - 1], 'Thank you for submitting — ' + CONFIG.GROUP_NAME,
+    'Hi ' + first(r) + ',\n\nThank you for submitting your answers to the ' + CONFIG.GROUP_NAME +
+    '. If you’re a fit, we’ll be in touch with more information about the opportunity and the event.\n\n— ' + CONFIG.HOST);
 }
 function sendAccepted(r, start) {
   mail(r[col('Email') - 1], 'You’re in — ' + CONFIG.GROUP_NAME,
