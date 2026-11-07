@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interest Form</title>
+<meta name="description" content="An invitation to a small reading group on robotics and manufacturing. Answer six questions to request a seat.">
+<meta name="theme-color" content="#0c0f14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Interest Form">
+<meta property="og:description" content="An invitation to a small reading group on robotics and manufacturing. Answer six questions to request a seat.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232b3a2b'/%3E%3Cpath d='M32 12 52 32 32 52 12 32Z' fill='none' stroke='%23c4804f' stroke-width='3'/%3E%3Cpath d='M32 22 42 32 32 42 22 32Z' fill='%23c4804f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0c0f14; --olive:#2b3a2b; --olive-2:#344833; --copper:#c4804f; --copper-2:#d89a6c; --cream:#efe6d2; --mist:#a9b3a2;
+  --serif:'Cormorant Garamond','Cormorant',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--night);color:var(--cream);font-family:var(--serif);font-size:20px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--copper)}
+
+/* ---- the film: two stacked players so clips hand off without a blink ---- */
+.film{position:fixed;inset:0;background:var(--night)}
+.film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:35% 50%;opacity:0;transition:opacity .25s linear;background:var(--night)}
+.film video.on{opacity:1;z-index:1}
+.film::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 40% 45%,transparent 55%,rgba(5,7,10,.45) 100%)}
+
+/* ---- host line + skip ---- */
+.host{position:fixed;z-index:6;left:max(22px,3vw);bottom:max(20px,3.4vh);text-shadow:0 1px 12px rgba(0,0,0,.7)}
+.host .mono{font-family:var(--serif);font-size:12px;font-style:normal;letter-spacing:.34em;font-weight:500}
+.host p{font-style:italic;font-size:19px;color:var(--cream);margin-top:2px}
+.host a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(196,128,82,.6)}
+.skip{position:fixed;z-index:7;top:max(16px,2.4vh);right:max(18px,2.4vw);font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--cream);background:rgba(12,15,20,.45);border:1px solid rgba(239,230,210,.35);padding:9px 14px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s;backdrop-filter:blur(4px)}
+.skip.on{opacity:.85;pointer-events:auto}.skip:hover{opacity:1;border-color:var(--copper)}
+.prog{position:fixed;z-index:6;left:max(22px,3vw);top:max(20px,3.4vh);display:flex;gap:8px}
+.prog i{width:26px;height:2px;background:rgba(239,230,210,.25);display:block;transition:background .5s}
+.prog i.d{background:var(--copper)}.prog i.c{background:var(--cream)}
+
+/* ---- the question card: matte cardstock, one hairline, a pressed seal ---- */
+.ask{position:fixed;z-index:20;right:max(24px,5vw);top:50%;transform:translateY(-50%);width:min(420px,38vw);padding:clamp(38px,3.8vw,58px) clamp(34px,3.4vw,52px) clamp(34px,3.2vw,48px);text-align:center;max-height:90vh;overflow:auto;
+  background:
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.55 .9' numOctaves='5' seed='8'/><feColorMatrix values='0 0 0 0 .92  0 0 0 0 .88  0 0 0 0 .78  0 0 0 .11 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='500'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 .95  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>"),
+   #15171a;
+  border:1px solid rgba(255,255,255,.06);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 40px 60px -30px rgba(0,0,0,.8),0 2px 4px rgba(0,0,0,.4)}
+.ask::after{content:"";position:absolute;inset:14px;border:1px solid rgba(196,160,98,.32);pointer-events:none}
+.ask>*{position:relative}
+.seal{width:62px;height:62px;margin:0 auto 16px;background:url(clips/seal.png) center/contain no-repeat;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.ask.in{animation:cardin 1.1s cubic-bezier(.2,.7,.2,1) both}
+@keyframes cardin{from{opacity:0;transform:translateY(-49%)}to{opacity:1;transform:translateY(-50%)}}
+.ask .mono{font-family:var(--serif);font-size:12px;letter-spacing:.38em;font-weight:500;color:#9d8660}
+.ask h3{font-weight:400;font-size:clamp(28px,2.5vw,36px);line-height:1.2;font-style:italic;margin:16px 0 28px;color:#eee5d1;letter-spacing:.005em}
+.ask input,.ask textarea{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(238,229,209,.3);padding:8px 2px;font:inherit;font-size:23px;text-align:center;color:#eee5d1;outline:none;border-radius:0;transition:border-color .5s}
+.ask textarea{resize:none;min-height:96px;line-height:32px;font-size:20px;text-align:left;border:1px solid rgba(238,229,209,.2);padding:12px 14px}
+.ask textarea.big{min-height:160px}
+.ask input::placeholder{color:rgba(238,229,209,.25)}
+.ask input:focus,.ask textarea:focus{border-color:#c4a062}
+.ask input[type=number]{max-width:120px;display:block;margin:0 auto;-moz-appearance:textfield}.ask input::-webkit-outer-spin-button,.ask input::-webkit-inner-spin-button{-webkit-appearance:none}
+.note{font-size:16px;color:#948f7e;font-style:italic;margin-top:14px;line-height:1.45}
+.err{color:#d3a08d;font-style:italic;font-size:16px;min-height:1.3em;margin-top:10px}
+.check{display:flex;gap:12px;align-items:flex-start;margin-top:16px;font-size:15px;color:#948f7e;text-align:left;font-style:italic}
+.check input{width:auto;margin-top:5px;accent-color:#c4a062}
+.btn{margin-top:24px;display:inline-block;font-family:var(--serif);font-size:13px;font-weight:500;letter-spacing:.38em;text-transform:uppercase;background:transparent;color:#eee5d1;border:0;border-bottom:1px solid rgba(196,160,98,.7);padding:10px 4px 9px 8px;cursor:pointer;transition:color .5s,border-color .5s}
+.btn:hover{color:#d9b877;border-color:#d9b877}.btn[disabled]{opacity:.5;cursor:wait}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--copper-2);outline-offset:3px}
+.ask input:focus-visible,.ask textarea:focus-visible{outline:none}
+.loading{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:var(--night);transition:opacity .8s;pointer-events:none}
+.loading.off{opacity:0}
+@media (max-width:800px){
+  .film video{object-position:22% 50%}
+  .ask{right:auto;left:50%;top:auto;bottom:max(14px,2vh);transform:translateX(-50%);width:min(94vw,520px);max-height:64vh}
+  .ask.in{animation:cardin2 .7s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes cardin2{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translateX(-50%)}}
+  .host{display:none}
+}
+@media (prefers-reduced-motion:reduce){.ask.in{animation:none}}
+
+/* ---- closing: an olive envelope with a round window, like a tea-room moon window ---- */
+@property --r{syntax:'<length>';inherits:false;initial-value:0px}
+.env{position:fixed;z-index:25;left:50%;top:50%;width:min(88vw,560px);aspect-ratio:1.28;transform:translate(-50%,-50%);padding:0;text-align:center;opacity:0;pointer-events:none;
+  filter:drop-shadow(0 40px 50px rgba(0,0,0,.6)) drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.env.on{pointer-events:auto;animation:envin 1.6s cubic-bezier(.2,.7,.2,1) .1s both}
+@keyframes envin{from{opacity:0;transform:translate(-50%,-47%)}to{opacity:1;transform:translate(-50%,-50%)}}
+.env .paper{position:absolute;inset:0;--r:0px;
+  background:
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.6 .85' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 .95  0 0 0 0 .95  0 0 0 0 .8  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+   linear-gradient(165deg,#6f7a52,#5d6843);
+  -webkit-mask:radial-gradient(circle at 50% 34%,transparent var(--r),#000 calc(var(--r) + 1.2px));mask:radial-gradient(circle at 50% 34%,transparent var(--r),#000 calc(var(--r) + 1.2px))}
+.env.on .paper{animation:moon 2.2s cubic-bezier(.3,.7,.1,1) .9s forwards}
+@keyframes moon{to{--r:clamp(34px,6.4vw,54px)}}
+.env .ring{position:absolute;left:50%;top:34%;width:calc(2*clamp(34px,6.4vw,54px) + 14px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(239,230,210,.4);opacity:0}
+.env.on .ring{animation:fade 1.4s ease 2.4s forwards}@keyframes fade{to{opacity:1}}
+.env .crease{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+.env .msg{position:absolute;left:0;right:0;bottom:15%;padding:0 8%;opacity:0}
+.env.on .msg{animation:fade 1.4s ease 2.6s forwards}
+.env .msg h2{font-weight:400;font-style:italic;font-size:clamp(26px,3.4vw,36px);color:#f1e9d4;line-height:1.15}
+.env .msg p{font-size:15px;color:rgba(241,233,212,.75);font-style:italic;margin-top:10px;line-height:1.4}
+.env .seal{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);margin:0;opacity:0}
+.env.on .seal{animation:fade 1s ease 3s forwards}
+.film.dim::after{background:rgba(5,7,10,.28)}
+
+.ask{opacity:0;pointer-events:none;transition:opacity .9s ease}
+.ask.show{opacity:1;pointer-events:auto}
+.ask.in{animation:none}
+.back{position:absolute;left:22px;top:20px;z-index:3;background:none;border:0;cursor:pointer;font-family:var(--serif);font-size:13px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:#948f7e;padding:6px 4px;transition:color .4s}
+.back:hover{color:#d9b877}
+.qpop{position:fixed;z-index:19;width:min(460px,72vw);transform:translate(-50%,-50%);text-align:center;font-style:italic;font-weight:500;font-size:clamp(32px,3.5vw,52px);line-height:1.12;color:#f4ecd8;letter-spacing:.005em;
+  text-shadow:0 2px 3px rgba(0,0,0,.6),0 0 34px rgba(0,0,0,.85),0 0 80px rgba(0,0,0,.7);pointer-events:none;opacity:0}
+.qpop.in{animation:qrise 1.3s cubic-bezier(.2,.7,.2,1) both}
+@keyframes qrise{from{opacity:0;transform:translate(-50%,-38%);filter:blur(6px)}to{opacity:1;transform:translate(-50%,-50%);filter:blur(0)}}
+@media (max-width:800px){.ask{transform:translateX(-50%)}}
+.contact{color:inherit;opacity:.7;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}.contact:hover{opacity:1}.fine{font-size:.8em;opacity:.8;margin-top:.9em}
+</style>
+</head>
+<body>
+<div class="film" aria-hidden="true"><video id="vA" muted playsinline preload="auto"></video><video id="vB" muted playsinline preload="auto"></video></div>
+<div class="prog" id="prog" aria-hidden="true"></div>
+<button class="skip" id="skip" type="button">Skip ›</button>
+<div class="host"><p class="mono">Hosted by</p><p><a id="hostA" href="#" target="_blank" rel="noopener noreferrer">Will Sentance</a></p></div>
+
+<main>
+<div class="ask" id="ask" hidden role="dialog" aria-live="polite" aria-labelledby="askQ">
+  <button class="back" id="askBack" type="button" hidden>‹ Back</button>
+  <div class="seal" aria-hidden="true"></div>
+  <p class="mono" id="askK"></p>
+  <h3 id="askQ"></h3>
+  <div id="askBody"></div>
+  <div class="err" id="askErr" role="alert"></div>
+  <label class="check" id="askConsent" hidden><input id="consentBox" type="checkbox"><span>I’m happy to be emailed about this event. My details are kept by the organizers only to run the group. <a class="contact" href="#" data-c="1">Questions or removal requests</a>.</span></label>
+  <div class="hp" aria-hidden="true"><label>Leave blank<input id="company" type="text" tabindex="-1" autocomplete="off"></label></div>
+  <button class="btn" id="askGo" type="button">Continue</button>
+</div>
+</main>
+<div class="env" id="env" role="status" aria-live="polite">
+  <div class="paper"></div>
+  <svg class="crease" viewBox="0 0 100 78" preserveAspectRatio="none" aria-hidden="true"><path d="M0 78 L50 44 L100 78" fill="none" stroke="rgba(20,26,14,.55)" stroke-width=".25"/></svg>
+  <div class="ring"></div>
+  <div class="msg"><h2>Your name is in the book.</h2><p id="envNote"></p><p class="fine"><a class="contact" href="#" data-c="1">Questions or want your details removed?</a></p></div>
+  <div class="seal" aria-hidden="true"></div>
+</div>
+<div class="qpop" id="qpop" hidden aria-hidden="true"></div>
+<div class="loading" id="loading" aria-hidden="true"><p class="mono">Interest Form</p></div>
+
+<script>
+const CONFIG = {
+  endpoint: "https://script.google.com/macros/s/AKfycbwrk_KpBkV3RHh1haa_g4kUgHbQlh-JwbB1ghx3fyXUM8JRHxkYeEF2v5_h9rjPtOFL8Q/exec",
+  host: "Will Sentance",
+  hostUrl: "https://www.linkedin.com/in/willsentance/"
+};
+const $ = id => document.getElementById(id);
+$('hostA').textContent = CONFIG.host; if (CONFIG.hostUrl) $('hostA').href = CONFIG.hostUrl; else $('hostA').removeAttribute('href');
+
+async function sendRegistration(v){
+  if (CONFIG.endpoint) {
+    const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(v) });
+    let j = { ok: true }; try { j = await r.json(); } catch (_) {}
+    if (j.ok === false) throw new Error(j.reason === 'age' ? 'This group is for readers 13 and older.' : 'Something went wrong.');
+  } else { console.info('[demo mode] would submit:', v); await new Promise(r => setTimeout(r, 700)); }
+  return { ok: true };
+}
+
+/* ---------- the six questions (same wording the engraved paper shows) ---------- */
+const STEPS = [
+  { k: 'age',      q: 'First, how old are you?', type: 'number', hint: 'A small thing before anything else.' },
+  { k: 'name',     q: 'What is your name?', type: 'text', auto: 'name', max: 120 },
+  { k: 'email',    q: 'Where can the invitation find you?', type: 'email', auto: 'email', hint: 'For your confirmation and the calendar invite.', max: 200 },
+  { k: 'linkedin', q: 'Show us where you work in public.', type: 'url', ph: 'https://linkedin.com/in/…', hint: 'Your LinkedIn profile.', max: 300 },
+  { k: 'links',    q: 'Anything else worth seeing?', type: 'area', hint: 'A site, a paper, a repo. One per line. Optional.', max: 1200, rows: 3 },
+  { k: 'answer',   q: 'What is the first machine you would build?', type: 'area', big: true, max: 1500, rows: 6, consent: true, hint: 'You are handed a factory that can make anything except itself. Which assumption in your answer is most likely to be wrong?' }
+];
+const N = STEPS.length, answers = {};
+/* contact address is assembled in script so it never sits in the page source as plain text */
+document.querySelectorAll('a.contact').forEach(a => a.addEventListener('click', e => { e.preventDefault(); location.href = 'mai' + 'lto:' + ['aceeyahsa', 'gmail.com'].join('@') + '?subject=' + encodeURIComponent('Reading group'); }));
+/* resume: progress is kept in this browser for 14 days, so closing the tab or refreshing picks up at the same question */
+const PKEY = 'pe_progress_v1', DKEY = 'pe_done_v1';
+const ls = { get(k){ try { return localStorage.getItem(k); } catch (_) { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch (_) {} }, del(k){ try { localStorage.removeItem(k); } catch (_) {} } };
+function saveProg(next, draftK, draftV){
+  const a = Object.assign({}, answers); if (draftK && draftK !== 'age') a[draftK] = draftV;
+  ls.set(PKEY, JSON.stringify({ qi: next, answers: a, t: Date.now() }));
+}
+function loadProg(){ try { const d = JSON.parse(ls.get(PKEY) || 'null'); if (d && d.answers && Number.isInteger(d.qi) && d.qi >= 0 && d.qi < N && Date.now() - d.t < 14*864e5) return d; } catch (_) {} return null; }
+const CLIP = i => `clips/clip${i}.mp4`, REV = i => `clips/r${i}.mp4`, POSTER = i => `clips/p${i}.jpg`;
+const QPOS = [{"cx": 0.372, "cy": 0.685, "w": 0.225, "h": 0.231}, {"cx": 0.392, "cy": 0.532, "w": 0.278, "h": 0.469}, {"cx": 0.396, "cy": 0.526, "w": 0.306, "h": 0.487}, {"cx": 0.416, "cy": 0.498, "w": 0.175, "h": 0.28}, {"cx": 0.417, "cy": 0.503, "w": 0.181, "h": 0.246}, {"cx": 0.387, "cy": 0.542, "w": 0.141, "h": 0.287}];   // where the paper sits in each settled shot (0-1 of the frame)
+
+/* ---------- player: clip j plays after question j is answered; Back plays it in reverse ---------- */
+const vids = [$('vA'), $('vB')]; let welcomeBack = false, act = 0, qi = 0, state = 'boot', playing = false, busy = false;
+function mount(v, src, poster){ v.poster = poster; v.src = src; v.load(); }
+function show(v){ vids.forEach(x => x.classList.toggle('on', x === v)); }
+const prog = $('prog'); for (let i = 0; i < N; i++) prog.appendChild(document.createElement('i'));
+function paint(){ [...prog.children].forEach((d, i) => { d.className = i < qi ? 'd' : (i === qi && state !== 'done' ? 'c' : (state === 'done' ? 'd' : '')); }); }
+function playOn(v, onDone){
+  let finished = false;
+  const done = () => { if (finished) return; finished = true; playing = false; $('skip').classList.remove('on'); v.onended = v.onerror = null; clearTimeout(guard); onDone(); };
+  const guard = setTimeout(done, 40000);   // never trap someone behind a stalled clip
+  v.onended = done; v.onerror = done; playing = true; $('skip').classList.add('on');
+  const p = v.play(); if (p && p.catch) p.catch(done);
+}
+$('skip').addEventListener('click', () => { const v = vids.find(x => x.classList.contains('on')); if (playing && v && isFinite(v.duration)) v.currentTime = Math.max(0, v.duration - .05); });
+
+/* ---------- the question card ---------- */
+const ask = $('ask'), askK = $('askK'), askQ = $('askQ'), askBody = $('askBody'), askErr = $('askErr'), askGo = $('askGo'), askConsent = $('askConsent'), consentBox = $('consentBox'), askBack = $('askBack'), qpop = $('qpop');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function qAnchor(j){
+  const vw = innerWidth, vh = innerHeight, s = Math.max(vw/1280, vh/720), ox = (vw - 1280*s)*.35, oy = (vh - 720*s)*.5, q = QPOS[j], mob = vw <= 800;
+  let x = ox + q.cx*1280*s, y = oy + (q.cy - q.h/2)*720*s - .07*vh;
+  y = Math.min(Math.max(y, vh*.15), mob ? vh*.3 : vh*.68);
+  x = Math.min(Math.max(x, vw*.28), vw*(mob ? .72 : .5));
+  return { x, y };
+}
+function flipToCard(done){
+  const a = qpop.getBoundingClientRect(), b = askQ.getBoundingClientRect();
+  const dx = (b.left + b.width/2) - (a.left + a.width/2), dy = (b.top + b.height/2) - (a.top + a.height/2);
+  const k = parseFloat(getComputedStyle(askQ).fontSize) / parseFloat(getComputedStyle(qpop).fontSize);
+  qpop.classList.remove('in');
+  const an = qpop.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${k})`, opacity: 1 }], { duration: 1000, easing: 'cubic-bezier(.5,0,.2,1)', fill: 'forwards' });
+  ask.classList.add('show');
+  an.onfinish = () => { askQ.style.visibility = 'visible'; qpop.hidden = true; an.cancel(); done && done(); };
+}
+function openAsk(j, quick){
+  const S = STEPS[j]; state = 'ask'; busy = false; paint();
+  askK.textContent = `${['I','II','III','IV','V','VI'][j]} of VI` + (welcomeBack ? ' · welcome back' : ''); welcomeBack = false; askQ.textContent = S.q; askErr.textContent = ''; askBody.innerHTML = ''; askGo.hidden = false; askBack.hidden = j === 0;
+  let el;
+  if (S.type === 'area') { el = document.createElement('textarea'); el.rows = S.rows || 3; if (S.big) el.className = 'big'; }
+  else { el = document.createElement('input'); el.type = S.type; if (S.type === 'number') { el.min = 1; el.max = 120; el.inputMode = 'numeric'; } }
+  el.id = 'askField'; el.maxLength = S.max || 200; el.autocomplete = S.auto || 'off'; if (S.ph) el.placeholder = S.ph; if (answers[S.k] != null) el.value = answers[S.k];
+  el.setAttribute('aria-label', S.q); askBody.appendChild(el); el.addEventListener('input', () => { if (S.k !== 'age') saveProg(j, S.k, el.value); });
+  if (S.hint) { const h = document.createElement('p'); h.className = 'note'; h.textContent = S.hint; askBody.appendChild(h); }
+  askConsent.hidden = !S.consent; askGo.textContent = j === N - 1 ? 'Request a seat' : 'Continue'; askGo.disabled = false;
+  const focusIt = () => { try { el.focus({ preventScroll: true }); } catch (e) {} };
+  ask.classList.remove('show'); ask.hidden = false;
+  if (reduce) { ask.classList.add('show'); focusIt(); return; }
+  // 1) the question rises off the origami, large and clear
+  const p = qAnchor(j); qpop.textContent = S.q; qpop.style.left = p.x + 'px'; qpop.style.top = p.y + 'px'; qpop.hidden = false; qpop.style.transform = '';
+  askQ.style.visibility = 'hidden'; qpop.classList.remove('in'); void qpop.offsetWidth; qpop.classList.add('in');
+  // 2) after a beat it glides into the answer card
+  setTimeout(() => flipToCard(focusIt), quick ? 900 : 1900);
+}
+function validate(j, v){
+  v = (v || '').trim(); const S = STEPS[j];
+  if (S.k === 'age') { const n = Number(v); if (!v || !Number.isInteger(n) || n < 1 || n > 120) return 'Please enter your age as a whole number.'; }
+  if (S.k === 'name' && v.length < 2) return 'Please add your name.';
+  if (S.k === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'That email doesn’t look right.';
+  if (S.k === 'linkedin' && !/^(https?:\/\/)?([\w-]+\.)?linkedin\.com\/.+/i.test(v)) return 'Please add your LinkedIn profile link.';
+  if (S.k === 'answer') { if (v.length < 40) return 'Give the question a real answer, a few sentences at least.'; if (!consentBox.checked) return 'Please tick the box so we can email you.'; }
+  return '';
+}
+function block(){
+  state = 'blocked'; ls.del(PKEY); for (const k in answers) delete answers[k];
+  askK.textContent = 'Closed'; askQ.textContent = 'This group is for readers 13 and older.';
+  askBody.innerHTML = '<p class="note">Nothing you typed has been saved or sent anywhere. Thank you for stopping by.</p>'; askErr.textContent = ''; askConsent.hidden = true; askGo.hidden = true;
+}
+async function submitAsk(){
+  if (state !== 'ask' || busy) return;
+  const j = qi, S = STEPS[j], val = $('askField').value.trim(), msg = validate(j, val);
+  if (msg) { askErr.textContent = msg; return; }
+  if (S.k === 'age' && Number(val) <= 12) return block();
+  answers[S.k] = S.k === 'age' ? Number(val) : val;
+  if (j < N - 1) saveProg(j + 1);
+  if (j === N - 1) {
+    if ($('company').value) return;   // honeypot
+    askGo.disabled = true; askGo.textContent = 'Sending…'; askErr.textContent = '';
+    try { await sendRegistration({ name: answers.name, email: answers.email, age: answers.age, linkedin: answers.linkedin, links: answers.links || '', answer: answers.answer, ts: new Date().toISOString() }); }
+    catch (e) { askErr.textContent = (e && e.message ? e.message : 'Something went wrong.') + ' Please try again in a moment.'; askGo.disabled = false; askGo.textContent = 'Request a seat'; return; }
+  }
+  busy = true; ask.classList.remove('show'); ask.hidden = true; state = 'film';
+  playOn(vids[act], advance);
+}
+function advance(){
+  qi++;
+  if (qi >= N) return finish();
+  const old = vids[act]; act = 1 - act; show(vids[act]);   // the next clip's first frame is already waiting
+  mount(old, CLIP(qi + 1 < N ? qi + 1 : qi), POSTER(qi + 1 < N ? qi + 1 : qi));
+  paint(); setTimeout(() => openAsk(qi), 350);
+}
+/* Back: the previous step plays in reverse (the paper unfolds), then its question returns with your answer still in place */
+function goBack(){
+  if (state !== 'ask' || busy || qi === 0) return;
+  busy = true; const j = qi - 1; state = 'film';
+  ask.classList.remove('show'); ask.hidden = true; qpop.hidden = true; paint();
+  const cur = vids[act], rev = vids[1 - act];
+  mount(rev, REV(j), POSTER(j + 1)); show(rev);
+  playOn(rev, () => {
+    // swap onto clip j's own first frame (identical image), then refill the spare with clip j+1
+    mount(cur, CLIP(j), POSTER(j)); show(cur);
+    mount(rev, CLIP(j + 1), POSTER(j + 1));
+    qi = j; paint(); setTimeout(() => openAsk(qi, true), 250);
+  });
+}
+function finish(){
+  state = 'done'; ls.del(PKEY); if (answers.email) ls.set(DKEY, answers.email); paint(); ask.hidden = true;
+  document.querySelector('.film').classList.add('dim');
+  $('envNote').textContent = 'A confirmation is on its way to ' + (answers.email || 'you') + '. If you’re accepted, the date lands on your calendar the moment it’s confirmed.';
+  $('env').classList.add('on');
+}
+askGo.addEventListener('click', submitAsk);
+askBack.addEventListener('click', goBack);
+ask.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); submitAsk(); } });
+
+/* ---------- boot: first clip waits on its opening frame while question one is asked ---------- */
+const doneEmail = ls.get(DKEY), savedP = doneEmail ? null : loadProg();
+if (doneEmail) { answers.email = doneEmail; qi = N - 1; mount(vids[0], CLIP(N - 1), POSTER(N - 1)); mount(vids[1], CLIP(N - 1), POSTER(N - 1)); show(vids[0]); setTimeout(() => { $('loading').classList.add('off'); finish(); }, 600); }
+else {
+  if (savedP && savedP.qi > 0) { Object.assign(answers, savedP.answers); qi = savedP.qi; welcomeBack = true; }
+  else if (savedP) { Object.assign(answers, savedP.answers); }
+  mount(vids[0], CLIP(qi), POSTER(qi)); mount(vids[1], CLIP(qi + 1 < N ? qi + 1 : qi), POSTER(qi + 1 < N ? qi + 1 : qi)); show(vids[0]); paint();
+}
+let started = !!doneEmail;
+const start = () => { if (started) return; started = true; $('loading').classList.add('off'); openAsk(qi); };
+vids[0].addEventListener('loadeddata', start); setTimeout(start, 4500);   // if the clip is slow, ask anyway
+window.__dbg = { advance, get state(){ return state; }, get qi(){ return qi; } };
+</script>
+</body>
+</html>
