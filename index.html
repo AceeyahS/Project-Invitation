@@ -306,6 +306,7 @@ askBack.addEventListener('click', goBack);
 ask.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); submitAsk(); } });
 
 /* ---------- boot: first clip waits on its opening frame while question one is asked ---------- */
+if (/[?&]reset\b/.test(location.search)) { ls.del(PKEY); ls.del(DKEY); }
 const doneEmail = ls.get(DKEY), savedP = doneEmail ? null : loadProg();
 if (doneEmail) { answers.email = doneEmail; qi = N - 1; mount(vids[0], CLIP(N - 1), POSTER(N - 1)); mount(vids[1], CLIP(N - 1), POSTER(N - 1)); show(vids[0]); setTimeout(() => { $('loading').classList.add('off'); finish(); }, 600); }
 else {
