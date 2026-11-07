@@ -92,9 +92,9 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.6 .85' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 .95  0 0 0 0 .95  0 0 0 0 .8  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
    linear-gradient(165deg,#6f7a52,#5d6843);
   -webkit-mask:radial-gradient(circle at 50% 34%,transparent var(--r),#000 calc(var(--r) + 1.2px));mask:radial-gradient(circle at 50% 34%,transparent var(--r),#000 calc(var(--r) + 1.2px))}
-.env.on .paper{animation:moon 2.2s cubic-bezier(.3,.7,.1,1) .9s forwards}
+.env .paper{-webkit-mask:none!important;mask:none!important}
 @keyframes moon{to{--r:clamp(34px,6.4vw,54px)}}
-.env .ring{position:absolute;left:50%;top:34%;width:calc(2*clamp(34px,6.4vw,54px) + 14px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(239,230,210,.4);opacity:0}
+.env .ring{display:none;position:absolute;left:50%;top:34%;width:calc(2*clamp(34px,6.4vw,54px) + 14px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(239,230,210,.4);opacity:0}
 .env.on .ring{animation:fade 1.4s ease 2.4s forwards}@keyframes fade{to{opacity:1}}
 .env .crease{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
 .env .msg{position:absolute;left:0;right:0;bottom:15%;padding:0 8%;opacity:0}
