@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Group Invite</title>
+<meta name="description" content="An invitation to a small reading group on robotics and manufacturing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --egg:#F4EFE3; --egg-2:#EAE3D1; --bone:#FAF6EC; --ink:#26231F; --graphite:#625D53;
+  --frost:#BFCBCF; --blueprint:#2E4457; --gilt:#A6935F;
+  --serif:'Cormorant Garamond','Cormorant',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  /* eggshell texture: cloudy tone + fine grain + sparse speckle */
+  --tex:
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .48  0 0 0 0 .36  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>"),
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .26  0 0 0 0 .18  0 0 0 .16 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2' seed='9'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .26  0 0 0 0 .18  11 0 0 0 -7.9'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--tex),var(--egg);color:var(--ink);font-family:var(--serif);font-size:20px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at 50% 40%,transparent 55%,rgba(120,100,70,.14) 100%)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--graphite)}
+.emboss{color:#2c2924;text-shadow:0 1px 0 rgba(255,255,255,.7),0 -1px 0 rgba(0,0,0,.18)}
+
+/* ---------- ORIGAMI STAGE (3D lives in the fixed canvas) ---------- */
+#gl{position:fixed;inset:0;width:100vw;height:100vh;height:100svh;z-index:0;display:block;background:#cfc9b9;touch-action:pan-y}
+.origami{position:relative;height:100vh;height:100svh}
+main#site{pointer-events:none}
+.paper,.ask,.fb-head{pointer-events:auto}
+.stage{position:absolute;inset:0;overflow:hidden}
+.hud{position:absolute;z-index:5;transition:opacity .5s}
+.hud.tl{left:5vw;top:5vh}.hud.bl{left:5vw;bottom:5vh;max-width:min(380px,60vw)}.hud.br{right:5vw;bottom:5vh}
+.hud h1{font-size:clamp(15px,1.5vw,19px);font-weight:500;font-style:italic;margin-top:4px;color:var(--graphite)}
+.cap{font-style:italic;font-size:21px;color:var(--graphite);margin-top:2px}
+.hud b{font-weight:500;color:var(--ink)}
+.hud .mono,.cap,.hud h1{text-shadow:0 1px 0 rgba(255,255,255,.55)}
+.tip{position:absolute;left:0;top:0;z-index:6;opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap;background:rgba(244,239,227,.92);border:1px solid rgba(38,35,31,.45);padding:8px 14px}
+.tip.on{opacity:1}.tip span{display:inline-block;animation:nudge 1.3s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+#open{position:absolute;z-index:30;left:50%;bottom:5vh;transform:translateX(-50%);white-space:nowrap;background:rgba(244,239,227,.86);border:1px solid rgba(38,35,31,.5);padding:13px 24px;cursor:pointer;color:var(--ink);opacity:0;pointer-events:none;transition:opacity .4s,background .3s}
+#open.on{opacity:1;pointer-events:auto}#open:hover{background:var(--bone)}
+#hostLink{position:fixed;z-index:6;left:0;top:0;width:0;height:0;color:transparent;background:none;opacity:0;pointer-events:none;overflow:hidden;font-size:1px;transition:opacity .3s}
+#hostLink.on{opacity:1;pointer-events:auto;cursor:pointer}#hostLink:hover{background:rgba(166,147,95,.16)}
+.ask{position:fixed;z-index:20;right:5vw;top:50%;transform:translateY(-50%);width:min(440px,38vw);padding:clamp(24px,3vw,40px);background:var(--tex),var(--bone);border:1px solid rgba(38,35,31,.45);box-shadow:0 1px 0 #fff inset,0 40px 70px -30px rgba(40,30,15,.55);max-height:88vh;overflow:auto}
+.ask::before{content:"";position:absolute;inset:6px;border:1px solid rgba(38,35,31,.16);pointer-events:none}
+.ask.in{animation:cardin .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes cardin{from{opacity:0;transform:translateY(-46%) rotateX(-12deg)}to{opacity:1;transform:translateY(-50%)}}
+.ask h3{font-weight:500;font-size:clamp(24px,2.3vw,32px);line-height:1.15;font-style:italic;margin:10px 0 18px}
+.ask textarea.big{min-height:170px}
+.ask .btn{margin-top:22px}
+.ask .check{margin-top:18px}
+.fb-head,html:not(.fallback) #register{display:none}
+html.fallback .fb-head{display:block}
+html.fallback #gl,html.fallback .origami,html.fallback #hostLink,html.fallback .ask{display:none!important}
+.fb-head{text-align:center;padding:clamp(60px,12vh,120px) 6vw 0}
+.fb-head h1{font-weight:500;font-size:clamp(46px,9vw,100px);line-height:.95}.fb-head h1 em{display:block;font-weight:400}
+.paper{position:relative;z-index:3;background:var(--tex),var(--egg);box-shadow:0 -40px 80px -20px rgba(60,45,20,.4)}
+html.fallback .paper{box-shadow:none}
+@media (max-width:800px){
+  .ask{right:auto;left:50%;top:auto;bottom:2.5vh;transform:translateX(-50%);width:min(94vw,520px);max-height:62vh}
+  .ask.in{animation:cardin2 .6s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes cardin2{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translateX(-50%)}}
+  .hud.bl{bottom:3vh}.hud.br{display:none}.hud.tl{top:3vh}
+}
+/* ---------- SITE ---------- */
+main{position:relative;z-index:2}
+section{padding:clamp(70px,12vh,140px) 6vw;max-width:1180px;margin:0 auto}
+.rule{height:1px;background:linear-gradient(90deg,transparent,rgba(38,35,31,.35),transparent);max-width:1180px;margin:0 auto}
+h2{font-weight:500;font-size:clamp(34px,5vw,60px);line-height:1.05;margin:10px 0 28px}
+h2 em{font-weight:400}
+.about p{max-width:640px;font-size:clamp(21px,2.2vw,26px)}
+.about p+p{margin-top:1em}
+.about .dropcap::first-letter{float:left;font-size:4.2em;line-height:.8;padding:.06em .1em 0 0;font-weight:500}
+.placeholder{color:var(--graphite);font-style:italic}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-top:1px solid rgba(38,35,31,.35);border-bottom:1px solid rgba(38,35,31,.35);margin-top:50px}
+.facts div{padding:22px 24px 22px 0}
+.facts div+div{padding-left:24px;border-left:1px solid rgba(38,35,31,.2)}
+.facts p{font-size:24px;margin-top:6px}
+
+/* ---------- FORM ---------- */
+.page{position:relative;max-width:760px;margin:0 auto;padding:clamp(28px,5vw,64px);background:var(--tex),var(--bone);
+  border:1px solid rgba(38,35,31,.4);box-shadow:0 1px 0 #fff inset,0 40px 70px -35px rgba(60,45,20,.45),10px 0 0 -4px var(--egg-2),20px 0 0 -8px var(--egg)}
+.page::before{content:"";position:absolute;inset:7px;border:1px solid rgba(38,35,31,.16);pointer-events:none}
+label,.lab{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--graphite);margin:34px 0 4px}
+label small{letter-spacing:.1em;text-transform:none;font-family:var(--serif);font-style:italic;font-size:15px;margin-left:8px}
+input[type=text],input[type=email],input[type=url],input[type=number],textarea{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(38,35,31,.55);padding:8px 2px;font:inherit;font-size:24px;color:var(--ink);outline:none;border-radius:0;transition:border-color .3s,box-shadow .3s}
+textarea{resize:vertical;min-height:130px;line-height:1.45;background:repeating-linear-gradient(transparent 0 35px,rgba(38,35,31,.14) 35px 36px);font-size:22px;line-height:36px;padding:0 2px}
+input:focus,textarea:focus{border-color:var(--blueprint);box-shadow:0 1px 0 var(--blueprint)}
+input[type=number]{max-width:140px;-moz-appearance:textfield}input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
+.btn{margin-top:38px;display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;background:var(--ink);color:var(--bone);border:0;padding:18px 34px;cursor:pointer;box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 10px 20px -10px rgba(0,0,0,.6);transition:transform .2s,background .2s}
+.btn:hover{background:var(--blueprint);transform:translateY(-1px)}
+.btn[disabled]{opacity:.5;cursor:wait}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);box-shadow:none}
+.row{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+.err{color:#8a3a2b;font-style:italic;font-size:17px;min-height:1.3em;margin-top:10px}
+.question{margin-top:44px;padding:26px 0 0;border-top:1px solid rgba(38,35,31,.3)}
+.question blockquote{font-size:clamp(24px,3vw,32px);line-height:1.25;font-style:italic;margin:10px 0 0;color:var(--ink)}
+.count{font-family:var(--mono);font-size:11px;color:var(--graphite);text-align:right;margin-top:6px}
+.check{display:flex;gap:12px;align-items:flex-start;margin-top:30px;font-size:17px;color:var(--graphite)}
+.check input{margin-top:6px;accent-color:var(--blueprint)}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden}
+.note{font-size:18px;color:var(--graphite);font-style:italic}
+a{color:inherit;text-decoration:none;background:linear-gradient(var(--gilt),var(--gilt)) 0 100%/100% 1px no-repeat;transition:color .25s,background-size .25s}
+a:hover{color:var(--blueprint);background-size:100% 2px}
+[hidden]{display:none!important}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity 1s ease,transform 1s ease}.reveal.in{opacity:1;transform:none}
+.fadein{animation:fadein .9s ease both}@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+footer{text-align:center;padding:60px 6vw 90px}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+@media (max-width:700px){.hud.br{right:auto;left:6vw;bottom:calc(7vh + 82px)}.hud.tl{display:none}.cap{font-size:19px}.facts div+div{padding-left:0;border-left:0;border-top:1px solid rgba(38,35,31,.2)}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<main id="site">
+
+<!-- ============ ORIGAMI INVITATION (interactive, WebGL) ============ -->
+<div class="origami" id="origami">
+  <div class="stage" id="stage">
+    <div class="hud bl"><p class="mono" id="hudFig">Fold 1 of 6</p><p class="cap" id="hudCap">Swipe across the glowing strip to fold it.</p></div>
+    <div class="hud br mono">Creases folded <b id="hudN">00</b> / <span id="hudAll">34</span></div>
+    <div class="tip mono" id="tip">Swipe to fold <span>→</span></div>
+    <button id="open" class="mono" type="button">Or tap here to fold</button>
+  </div>
+</div>
+<a id="hostLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Host's LinkedIn profile">host</a>
+
+<div class="ask" id="ask" hidden role="dialog" aria-live="polite">
+  <p class="mono" id="askK">Fold 1 of 6</p>
+  <h3 id="askQ"></h3>
+  <div id="askBody"></div>
+  <div class="err" id="askErr" role="alert"></div>
+  <label class="check" id="askConsent" hidden style="text-transform:none;letter-spacing:0;font-family:var(--serif)"><input id="consentBox" type="checkbox"><span>I’m happy to be emailed about this event. My details are kept by the organizers only to run the group.</span></label>
+  <button class="btn" id="askGo" type="button">Continue</button>
+</div>
+
+<div class="paper">
+<header class="fb-head"><p class="mono">Vol. I · An Invitation</p><h1 class="emboss">Reading Group<em>Invite</em></h1><p class="note">Hosted by <span data-cfg="host">X</span></p></header>
+<div class="rule"></div>
+
+<!-- ============ ABOUT ============ -->
+<section class="about reveal" id="about">
+  <p class="mono">About us</p>
+  <h2 class="emboss">A small room for<br><em>large questions.</em></h2>
+  <p class="dropcap" data-cfg="about1">[About us — draft copy goes here. A short paragraph on who is convening the group and why robotics and manufacturing deserve a reading list.]</p>
+  <p class="placeholder" data-cfg="about2">[Second paragraph — what a session looks like, who the group is for, and what members leave with.]</p>
+  <div class="facts">
+    <div><span class="mono">When</span><p data-cfg="when">Date to be confirmed</p></div>
+    <div><span class="mono">Where</span><p data-cfg="where">Location to be confirmed</p></div>
+    <div><span class="mono">Host</span><p data-cfg="host">X</p></div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ============ REGISTER ============ -->
+<section class="reveal" id="register">
+  <p class="mono" style="text-align:center">Request a seat</p>
+  <h2 class="emboss" style="text-align:center">Write your name<br><em>in the front of the book.</em></h2>
+
+  <div class="page">
+    <form id="rsvp" novalidate autocomplete="on">
+
+      <!-- Step 1: age gate. Nothing is sent anywhere until the final submit. -->
+      <div id="gate">
+        <label for="age" style="margin-top:0">First, your age <small>a small thing before anything else</small></label>
+        <div class="row">
+          <input id="age" type="number" inputmode="numeric" min="1" max="120" autocomplete="off" aria-describedby="gateErr">
+          <button type="button" class="btn ghost" id="gateBtn" style="margin-top:0;padding:14px 26px">Continue</button>
+        </div>
+        <div class="err" id="gateErr" role="alert"></div>
+      </div>
+
+      <div id="underage" hidden class="fadein">
+        <p style="font-size:26px;font-style:italic">This group is for readers 13 and older.</p>
+        <p class="note" style="margin-top:12px">Nothing you typed has been saved or sent anywhere. Thank you for stopping by.</p>
+      </div>
+
+      <div id="fields" hidden class="fadein">
+        <label for="name">Name</label>
+        <input id="name" type="text" autocomplete="name" maxlength="120">
+
+        <label for="email">Email <small>for your confirmation and the calendar invite</small></label>
+        <input id="email" type="email" autocomplete="email" maxlength="200">
+
+        <label for="linkedin">LinkedIn</label>
+        <input id="linkedin" type="url" placeholder="https://linkedin.com/in/…" maxlength="300">
+
+        <label for="links">Anything else you'd like us to see <small>site, paper, repo, one per line</small></label>
+        <textarea id="links" maxlength="1200" style="min-height:108px"></textarea>
+
+        <div class="question">
+          <span class="lab" style="margin-top:0">The question</span>
+          <blockquote data-cfg="question">You are handed a factory that can make anything except itself. What is the first machine you would build to change that, and which assumption in your answer is most likely to be wrong?</blockquote>
+          <label for="answer" style="margin-top:18px;visibility:hidden;height:0;margin-bottom:0">Your answer</label>
+          <textarea id="answer" maxlength="1500" aria-label="Your answer" style="min-height:216px;margin-top:6px"></textarea>
+          <div class="count"><span id="cnt">0</span> / 1500</div>
+        </div>
+
+        <div class="hp" aria-hidden="true"><label>Leave blank<input id="company" type="text" tabindex="-1" autocomplete="off"></label></div>
+
+        <label class="check" style="text-transform:none;letter-spacing:0;margin-top:30px;font-family:var(--serif)">
+          <input id="consent" type="checkbox">
+          <span>I'm happy to be emailed about this event. My details are kept by the organizers only to run the group.</span>
+        </label>
+
+        <div class="err" id="formErr" role="alert"></div>
+        <button class="btn" id="submit" type="submit">Request a seat</button>
+      </div>
+
+      <div id="done" hidden class="fadein">
+        <p class="mono">Received</p>
+        <p style="font-size:34px;line-height:1.15;margin:10px 0 14px">Your name is in the book.</p>
+        <p class="note">A confirmation is on its way to <b id="doneEmail"></b>. If you're accepted, the date lands on your calendar the moment it's confirmed, and we'll check in 48 hours before.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer><div class="orn"><b></b></div><p class="mono">Reading Group · <span data-cfg="host">X</span></p></footer>
+</div>
+</main>
+
+<script>
+/* =================== EDIT ME =================== */
+const CONFIG = {
+  endpoint: "",                 // paste your Apps Script Web App URL here (see README). Empty = demo mode.
+  host: "Will Sentance",
+  hostUrl: "https://www.linkedin.com/in/willsentance/",   // makes the host name a link; blank = plain text
+  when: "Date to be confirmed",
+  where: "Location to be confirmed",
+  about1: null,                 // set strings to replace the placeholder copy, e.g. "We are a small group…"
+  about2: null,
+  question: null                // set a string to change the question
+};
+/* =============================================== */
+for (const el of document.querySelectorAll('[data-cfg]')) {
+  const v = CONFIG[el.dataset.cfg]; if (v) { el.textContent = v; el.classList.remove('placeholder'); }
+  if (el.dataset.cfg === 'host' && CONFIG.hostUrl) {
+    const a = document.createElement('a');
+    a.href = CONFIG.hostUrl; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = CONFIG.host;
+    el.textContent = ''; el.appendChild(a);
+  }
+}
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+async function sendRegistration(v){
+  if(CONFIG.endpoint){
+    const r=await fetch(CONFIG.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(v)});
+    let j={ok:true};try{j=await r.json()}catch(_){}
+    if(j.ok===false)throw new Error(j.reason==='age'?'This group is for readers 13 and older.':'Something went wrong.');
+  }else{ console.info('[demo mode] would submit:',v); await new Promise(r=>setTimeout(r,700)); }
+  return {ok:true};
+}
+window.sendRegistration=sendRegistration;
+{const hl=document.getElementById('hostLink');if(CONFIG.hostUrl)hl.href=CONFIG.hostUrl;else hl.removeAttribute('href')}
+/* ---------- classic form (fallback) ---------- */
+const $=id=>document.getElementById(id);
+const gate=$('gate'),fields=$('fields'),under=$('underage'),doneEl=$('done');
+function wipeFields(){['name','email','linkedin','links','answer','company'].forEach(k=>$(k).value='');$('consent').checked=false;$('cnt').textContent=0}
+function checkAge(){
+  const raw=$('age').value.trim(),n=Number(raw);
+  $('gateErr').textContent='';
+  if(!raw||!Number.isInteger(n)||n<1||n>120){$('gateErr').textContent='Please enter your age as a whole number.';return}
+  if(n<=12){ wipeFields(); fields.hidden=true; under.hidden=false; $('age').value=''; return }
+  under.hidden=true; fields.hidden=false; $('name').focus({preventScroll:true});
+}
+$('gateBtn').addEventListener('click',checkAge);
+$('age').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkAge()}});
+$('age').addEventListener('input',()=>{ if(!fields.hidden){fields.hidden=true} under.hidden=true }); // re-gate if age is edited
+$('answer').addEventListener('input',e=>$('cnt').textContent=e.target.value.length);
+
+$('rsvp').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const err=$('formErr');err.textContent='';
+  const age=Number($('age').value);
+  if(!Number.isInteger(age)||age<13){err.textContent='This group is for readers 13 and older.';return}
+  const v={name:$('name').value.trim(),email:$('email').value.trim(),linkedin:$('linkedin').value.trim(),
+           links:$('links').value.trim(),answer:$('answer').value.trim()};
+  if(v.name.length<2)return err.textContent='Please add your name.';
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email))return err.textContent='That email doesn’t look right.';
+  if(!/^(https?:\/\/)?([\w-]+\.)?linkedin\.com\/.+/i.test(v.linkedin))return err.textContent='Please add your LinkedIn profile link.';
+  if(v.answer.length<40)return err.textContent='Give the question a real answer, a few sentences at least.';
+  if(!$('consent').checked)return err.textContent='Please tick the box so we can email you.';
+  if($('company').value)return; // honeypot: silently drop bots
+  const btn=$('submit');btn.disabled=true;btn.textContent='Sending…';
+  try{
+    await sendRegistration({...v,age,ts:new Date().toISOString()});
+    $('doneEmail').textContent=v.email;fields.hidden=true;gate.hidden=true;doneEl.hidden=false;wipeFields();
+    doneEl.scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(x){err.textContent=(x.message||'Something went wrong')+' Please try again in a moment.';btn.disabled=false;btn.textContent='Request a seat'}
+});
+</script>
+<script>/*__SCENE__*/</script>
+</body>
+</html>
