@@ -160,7 +160,8 @@ async function sendRegistration(v){
   if (CONFIG.endpoint) {
     const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(v) });
     let j = { ok: true }; try { j = await r.json(); } catch (_) {}
-    if (j.ok === false) throw new Error(j.reason === 'age' ? 'This group is for readers 13 and older.' : 'Something went wrong.');
+    console.info('[register] reply', r.status, j);
+    if (j.ok === false) throw new Error(j.reason === 'age' ? 'This group is for readers 13 and older.' : 'Something went wrong (code: ' + (j.reason || 'none') + ').');
   } else { console.info('[demo mode] would submit:', v); await new Promise(r => setTimeout(r, 700)); }
   return { ok: true };
 }
