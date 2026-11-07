@@ -78,7 +78,7 @@ function doPost(e) {
       const r = sh.getLastRow();
       sendReceipt(row);
       sh.getRange(r, col('Receipt sent')).setValue(new Date());
-    } finally { lock.release(); }
+    } finally { lock.releaseLock(); }
     return json({ ok: true });
   } catch (err) {
     return json({ ok: false, reason: 'server: ' + err });
@@ -146,7 +146,7 @@ function processQueue() {
       }
     });
     rng.setValues(rows);
-  } finally { lock.release(); }
+  } finally { lock.releaseLock(); }
 }
 
 function addToCalendar(email, start, end) {
