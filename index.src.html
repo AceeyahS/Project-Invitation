@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reading Group Invite</title>
 <meta name="description" content="An invitation to a small reading group on robotics and manufacturing.">
+<meta name="theme-color" content="#cfc9b9">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Reading Group Invite">
+<meta property="og:description" content="An invitation to a small reading group on robotics and manufacturing. Fold the sheet, answer six questions, request a seat.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F4EFE3'/%3E%3Cpath d='M32 12 52 32 32 52 12 32Z' fill='none' stroke='%23A6935F' stroke-width='3'/%3E%3Cpath d='M32 22 42 32 32 42 22 32Z' fill='%2326231F'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -55,8 +62,13 @@ main#site{pointer-events:none}
 .ask textarea.big{min-height:170px}
 .ask .btn{margin-top:22px}
 .ask .check{margin-top:18px}
-.fb-head,html:not(.fallback) #register{display:none}
+html:not(.fallback) #register{display:none}
+/* in 3D mode the title stays in the DOM for screen readers, just not on screen */
+html:not(.fallback) .fb-head{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;padding:0}
 html.fallback .fb-head{display:block}
+html.fallback .plainlink{display:none}
+.plainlink{position:fixed;z-index:31;top:max(14px,2.2vh);right:max(16px,2.4vw);background:rgba(244,239,227,.78);border:1px solid rgba(38,35,31,.32);padding:9px 14px;cursor:pointer;color:var(--graphite);pointer-events:auto;transition:background .4s cubic-bezier(.32,.72,0,1),color .3s,border-color .3s}
+.plainlink:hover{background:var(--bone);color:var(--ink);border-color:rgba(38,35,31,.6)}
 html.fallback #gl,html.fallback .origami,html.fallback #hostLink,html.fallback .ask{display:none!important}
 .fb-head{text-align:center;padding:clamp(60px,12vh,120px) 6vw 0}
 .fb-head h1{font-weight:500;font-size:clamp(46px,9vw,100px);line-height:.95}.fb-head h1 em{display:block;font-weight:400}
@@ -66,7 +78,9 @@ html.fallback .paper{box-shadow:none}
   .ask{right:auto;left:50%;top:auto;bottom:2.5vh;transform:translateX(-50%);width:min(94vw,520px);max-height:62vh}
   .ask.in{animation:cardin2 .6s cubic-bezier(.2,.8,.2,1) both}
   @keyframes cardin2{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translateX(-50%)}}
-  .hud.bl{bottom:3vh}.hud.br{display:none}.hud.tl{top:3vh}
+  .hud.bl{bottom:3vh;max-width:calc(100vw - 12vw)}.hud.br{display:none}.hud.tl{top:3vh}
+  /* keep the tap-to-fold button clear of the caption on phones */
+  #open{bottom:calc(3vh + 104px)}
 }
 /* ---------- SITE ---------- */
 main{position:relative;z-index:2}
@@ -92,6 +106,12 @@ label small{letter-spacing:.1em;text-transform:none;font-family:var(--serif);fon
 input[type=text],input[type=email],input[type=url],input[type=number],textarea{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(38,35,31,.55);padding:8px 2px;font:inherit;font-size:24px;color:var(--ink);outline:none;border-radius:0;transition:border-color .3s,box-shadow .3s}
 textarea{resize:vertical;min-height:130px;line-height:1.45;background:repeating-linear-gradient(transparent 0 35px,rgba(38,35,31,.14) 35px 36px);font-size:22px;line-height:36px;padding:0 2px}
 input:focus,textarea:focus{border-color:var(--blueprint);box-shadow:0 1px 0 var(--blueprint)}
+input[aria-invalid=true],textarea[aria-invalid=true]{border-color:#8a3b2e;box-shadow:0 1px 0 #8a3b2e}
+:focus-visible{outline:2px solid var(--blueprint);outline-offset:3px}
+input:focus-visible,textarea:focus-visible{outline:none}
+.orn{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 14px;color:var(--gilt)}
+.orn::before,.orn::after{content:"";width:48px;height:1px;background:currentColor;opacity:.6}
+.orn b{width:7px;height:7px;transform:rotate(45deg);background:currentColor;display:block}
 input[type=number]{max-width:140px;-moz-appearance:textfield}input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
 .btn{margin-top:38px;display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;background:var(--ink);color:var(--bone);border:0;padding:18px 34px;cursor:pointer;box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 10px 20px -10px rgba(0,0,0,.6);transition:transform .2s,background .2s}
 .btn:hover{background:var(--blueprint);transform:translateY(-1px)}
@@ -128,6 +148,7 @@ footer{text-align:center;padding:60px 6vw 90px}
     <div class="hud br mono">Creases folded <b id="hudN">00</b> / <span id="hudAll">34</span></div>
     <div class="tip mono" id="tip">Swipe to fold <span>→</span></div>
     <button id="open" class="mono" type="button">Or tap here to fold</button>
+    <button id="plain" class="mono plainlink" type="button">Use plain form</button>
   </div>
 </div>
 <a id="hostLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Host's LinkedIn profile">host</a>
@@ -280,18 +301,21 @@ $('age').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();c
 $('age').addEventListener('input',()=>{ if(!fields.hidden){fields.hidden=true} under.hidden=true }); // re-gate if age is edited
 $('answer').addEventListener('input',e=>$('cnt').textContent=e.target.value.length);
 
+$('plain').addEventListener('click',()=>{document.documentElement.classList.add('fallback');window.scrollTo(0,0)});
 $('rsvp').addEventListener('submit',async e=>{
   e.preventDefault();
   const err=$('formErr');err.textContent='';
+  document.querySelectorAll('[aria-invalid]').forEach(n=>n.removeAttribute('aria-invalid'));
+  const bad=(id,m)=>{err.textContent=m;const n=$(id);n.setAttribute('aria-invalid','true');n.focus();};
   const age=Number($('age').value);
-  if(!Number.isInteger(age)||age<13){err.textContent='This group is for readers 13 and older.';return}
+  if(!Number.isInteger(age)||age<13){bad('age','This group is for readers 13 and older.');return}
   const v={name:$('name').value.trim(),email:$('email').value.trim(),linkedin:$('linkedin').value.trim(),
            links:$('links').value.trim(),answer:$('answer').value.trim()};
-  if(v.name.length<2)return err.textContent='Please add your name.';
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email))return err.textContent='That email doesn’t look right.';
-  if(!/^(https?:\/\/)?([\w-]+\.)?linkedin\.com\/.+/i.test(v.linkedin))return err.textContent='Please add your LinkedIn profile link.';
-  if(v.answer.length<40)return err.textContent='Give the question a real answer, a few sentences at least.';
-  if(!$('consent').checked)return err.textContent='Please tick the box so we can email you.';
+  if(v.name.length<2)return bad('name','Please add your name.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email))return bad('email','That email doesn’t look right.');
+  if(!/^(https?:\/\/)?([\w-]+\.)?linkedin\.com\/.+/i.test(v.linkedin))return bad('linkedin','Please add your LinkedIn profile link.');
+  if(v.answer.length<40)return bad('answer','Give the question a real answer, a few sentences at least.');
+  if(!$('consent').checked)return bad('consent','Please tick the box so we can email you.');
   if($('company').value)return; // honeypot: silently drop bots
   const btn=$('submit');btn.disabled=true;btn.textContent='Sending…';
   try{

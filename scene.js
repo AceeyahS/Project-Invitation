@@ -236,6 +236,9 @@ async function boot() {
     camera.aspect = vw / vh; camera.updateProjectionMatrix();
     const t = Math.tan(camera.fov * Math.PI / 360), a = vw / vh;
     d0 = Math.max((W * 1.16 / 2) / (t * a), (H * 1.24 / 2) / t); dArm = Math.max(6.4, (3.4 * 1.2 / 2) / (t * a));
+    /* fog must scale with camera distance: on a narrow phone the camera sits ~3x farther than on desktop,
+       and a fixed 10-22 range washed the whole sheet into the backdrop */
+    const dm = Math.max(d0, dArm); scene.fog.near = dm * 1.4; scene.fog.far = dm * 3.05;
   }
   const KEY = [   // completed folds -> camera: polar, azimuth, distance, target
     [0.0001, 0.00, () => d0,         [0, 0, 0]],
