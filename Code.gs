@@ -81,7 +81,7 @@ function doPost(e) {
     } finally { lock.release(); }
     return json({ ok: true });
   } catch (err) {
-    return json({ ok: false, reason: 'server' });
+    return json({ ok: false, reason: 'server: ' + err });
   }
 }
 
