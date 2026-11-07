@@ -200,6 +200,7 @@ function playOn(v, onDone){
   const done = () => { if (finished) return; finished = true; playing = false; $('skip').classList.remove('on'); v.onended = v.onerror = null; clearTimeout(guard); onDone(); };
   const guard = setTimeout(done, 40000);   // never trap someone behind a stalled clip
   v.onended = done; v.onerror = done; playing = true; $('skip').classList.add('on');
+  try { v.playbackRate = 1.8; } catch (_) {}
   const p = v.play(); if (p && p.catch) p.catch(done);
 }
 $('skip').addEventListener('click', () => { const v = vids.find(x => x.classList.contains('on')); if (playing && v && isFinite(v.duration)) v.currentTime = Math.max(0, v.duration - .05); });
@@ -219,7 +220,7 @@ function flipToCard(done){
   const dx = (b.left + b.width/2) - (a.left + a.width/2), dy = (b.top + b.height/2) - (a.top + a.height/2);
   const k = parseFloat(getComputedStyle(askQ).fontSize) / parseFloat(getComputedStyle(qpop).fontSize);
   qpop.classList.remove('in');
-  const an = qpop.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${k})`, opacity: 1 }], { duration: 1000, easing: 'cubic-bezier(.5,0,.2,1)', fill: 'forwards' });
+  const an = qpop.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${k})`, opacity: 1 }], { duration: 650, easing: 'cubic-bezier(.5,0,.2,1)', fill: 'forwards' });
   ask.classList.add('show');
   an.onfinish = () => { askQ.style.visibility = 'visible'; qpop.hidden = true; an.cancel(); done && done(); };
 }
@@ -240,7 +241,7 @@ function openAsk(j, quick){
   const p = qAnchor(j); qpop.textContent = S.q; qpop.style.left = p.x + 'px'; qpop.style.top = p.y + 'px'; qpop.hidden = false; qpop.style.transform = '';
   askQ.style.visibility = 'hidden'; qpop.classList.remove('in'); void qpop.offsetWidth; qpop.classList.add('in');
   // 2) after a beat it glides into the answer card
-  setTimeout(() => flipToCard(focusIt), quick ? 900 : 1900);
+  setTimeout(() => flipToCard(focusIt), quick ? 450 : 800);
 }
 function validate(j, v){
   v = (v || '').trim(); const S = STEPS[j];
@@ -277,7 +278,7 @@ function advance(){
   if (qi >= N) return finish();
   const old = vids[act]; act = 1 - act; show(vids[act]);   // the next clip's first frame is already waiting
   mount(old, CLIP(qi + 1 < N ? qi + 1 : qi), POSTER(qi + 1 < N ? qi + 1 : qi));
-  paint(); setTimeout(() => openAsk(qi), 350);
+  paint(); setTimeout(() => openAsk(qi), 150);
 }
 /* Back: the previous step plays in reverse (the paper unfolds), then its question returns with your answer still in place */
 function goBack(){
