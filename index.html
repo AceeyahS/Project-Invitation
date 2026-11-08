@@ -25,8 +25,8 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 
 /* ---- the film: two stacked players so clips hand off without a blink ---- */
 .film{position:fixed;inset:0;background:var(--night)}
-.film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:35% 50%;opacity:0;transition:opacity .25s linear;background:var(--night)}
-.film video.on{opacity:1;z-index:1}
+.film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:35% 50%;opacity:1;transition:opacity .9s ease;background:var(--night)}
+.film video.fade{opacity:0}
 .film::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 40% 45%,transparent 55%,rgba(5,7,10,.45) 100%)}
 
 /* ---- host line + skip ---- */
@@ -120,9 +120,8 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 </style>
 </head>
 <body>
-<div class="film" aria-hidden="true"><video id="vA" muted playsinline preload="auto"></video><video id="vB" muted playsinline preload="auto"></video></div>
+<div class="film" aria-hidden="true"><video id="bg" muted playsinline autoplay preload="auto" disablepictureinpicture></video></div>
 <div class="prog" id="prog" aria-hidden="true"></div>
-<button class="skip" id="skip" type="button">Skip ›</button>
 <div class="host"><p class="mono">Hosted by</p><p><a id="hostA" href="#" target="_blank" rel="noopener noreferrer">Will Sentance</a></p></div>
 
 <main>
@@ -145,7 +144,6 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
   <div class="msg"><h2>Your name is in the book.</h2><p id="envNote"></p><p class="fine"><a class="contact" href="#" data-c="1">Questions or want your details removed?</a></p></div>
   <div class="seal" aria-hidden="true"></div>
 </div>
-<div class="qpop" id="qpop" hidden aria-hidden="true"></div>
 <div class="loading" id="loading" aria-hidden="true"><p class="mono">Interest Form</p></div>
 
 <script>
@@ -187,45 +185,22 @@ function saveProg(next, draftK, draftV){
   ls.set(PKEY, JSON.stringify({ qi: next, answers: a, t: Date.now() }));
 }
 function loadProg(){ try { const d = JSON.parse(ls.get(PKEY) || 'null'); if (d && d.answers && Number.isInteger(d.qi) && d.qi >= 0 && d.qi < N && Date.now() - d.t < 14*864e5) return d; } catch (_) {} return null; }
-const CLIP = i => `clips/clip${i}.mp4`, REV = i => `clips/r${i}.mp4`, POSTER = i => `clips/p${i}.jpg`;
-const QPOS = [{"cx": 0.372, "cy": 0.685, "w": 0.225, "h": 0.231}, {"cx": 0.392, "cy": 0.532, "w": 0.278, "h": 0.469}, {"cx": 0.396, "cy": 0.526, "w": 0.306, "h": 0.487}, {"cx": 0.416, "cy": 0.498, "w": 0.175, "h": 0.28}, {"cx": 0.417, "cy": 0.503, "w": 0.181, "h": 0.246}, {"cx": 0.387, "cy": 0.542, "w": 0.141, "h": 0.287}];   // where the paper sits in each settled shot (0-1 of the frame)
-
-/* ---------- player: clip j plays after question j is answered; Back plays it in reverse ---------- */
-const vids = [$('vA'), $('vB')]; let welcomeBack = false, act = 0, qi = 0, state = 'boot', playing = false, busy = false;
-function mount(v, src, poster){ v.poster = poster; v.src = src; v.load(); }
-function show(v){ vids.forEach(x => x.classList.toggle('on', x === v)); }
+/* ---------- the film: one long take that plays quietly behind every question and loops ---------- */
+const film = document.querySelector('.film'), bg = $('bg'), FILM = 'clips/film.mp4', POSTER = 'clips/poster.jpg';
+let welcomeBack = false, qi = 0, state = 'boot', busy = false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+bg.poster = POSTER; bg.loop = false;
+if (!reduce) { bg.src = FILM; bg.load(); }
+let fading = false;
+bg.addEventListener('timeupdate', () => { if (!fading && isFinite(bg.duration) && bg.duration - bg.currentTime < .9) { fading = true; bg.classList.add('fade'); } });
+bg.addEventListener('ended', () => { bg.currentTime = 0; const p = bg.play(); if (p && p.catch) p.catch(() => {}); setTimeout(() => { bg.classList.remove('fade'); fading = false; }, 200); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !reduce && bg.paused) { const p = bg.play(); if (p && p.catch) p.catch(() => {}); } });
 const prog = $('prog'); for (let i = 0; i < N; i++) prog.appendChild(document.createElement('i'));
 function paint(){ [...prog.children].forEach((d, i) => { d.className = i < qi ? 'd' : (i === qi && state !== 'done' ? 'c' : (state === 'done' ? 'd' : '')); }); }
-function playOn(v, onDone){
-  let finished = false;
-  const done = () => { if (finished) return; finished = true; playing = false; $('skip').classList.remove('on'); v.onended = v.onerror = null; clearTimeout(guard); onDone(); };
-  const guard = setTimeout(done, 40000);   // never trap someone behind a stalled clip
-  v.onended = done; v.onerror = done; playing = true; $('skip').classList.add('on');
-  try { v.playbackRate = 1.8; } catch (_) {}
-  const p = v.play(); if (p && p.catch) p.catch(done);
-}
-$('skip').addEventListener('click', () => { const v = vids.find(x => x.classList.contains('on')); if (playing && v && isFinite(v.duration)) v.currentTime = Math.max(0, v.duration - .05); });
 
 /* ---------- the question card ---------- */
-const ask = $('ask'), askK = $('askK'), askQ = $('askQ'), askBody = $('askBody'), askErr = $('askErr'), askGo = $('askGo'), askConsent = $('askConsent'), consentBox = $('consentBox'), askBack = $('askBack'), qpop = $('qpop');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-function qAnchor(j){
-  const vw = innerWidth, vh = innerHeight, s = Math.max(vw/1280, vh/720), ox = (vw - 1280*s)*.35, oy = (vh - 720*s)*.5, q = QPOS[j], mob = vw <= 800;
-  let x = ox + q.cx*1280*s, y = oy + (q.cy - q.h/2)*720*s - .07*vh;
-  y = Math.min(Math.max(y, vh*.15), mob ? vh*.3 : vh*.68);
-  x = Math.min(Math.max(x, vw*.28), vw*(mob ? .72 : .5));
-  return { x, y };
-}
-function flipToCard(done){
-  const a = qpop.getBoundingClientRect(), b = askQ.getBoundingClientRect();
-  const dx = (b.left + b.width/2) - (a.left + a.width/2), dy = (b.top + b.height/2) - (a.top + a.height/2);
-  const k = parseFloat(getComputedStyle(askQ).fontSize) / parseFloat(getComputedStyle(qpop).fontSize);
-  qpop.classList.remove('in');
-  const an = qpop.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${k})`, opacity: 1 }], { duration: 650, easing: 'cubic-bezier(.5,0,.2,1)', fill: 'forwards' });
-  ask.classList.add('show');
-  an.onfinish = () => { askQ.style.visibility = 'visible'; qpop.hidden = true; an.cancel(); done && done(); };
-}
-function openAsk(j, quick){
+const ask = $('ask'), askK = $('askK'), askQ = $('askQ'), askBody = $('askBody'), askErr = $('askErr'), askGo = $('askGo'), askConsent = $('askConsent'), consentBox = $('consentBox'), askBack = $('askBack');
+function openAsk(j){
   const S = STEPS[j]; state = 'ask'; busy = false; paint();
   askK.textContent = `${['I','II','III','IV','V','VI'][j]} of VI` + (welcomeBack ? ' · welcome back' : ''); welcomeBack = false; askQ.textContent = S.q; askErr.textContent = ''; askBody.innerHTML = ''; askGo.hidden = false; askBack.hidden = j === 0;
   let el;
@@ -235,15 +210,10 @@ function openAsk(j, quick){
   el.setAttribute('aria-label', S.q); askBody.appendChild(el); el.addEventListener('input', () => { if (S.k !== 'age') saveProg(j, S.k, el.value); });
   if (S.hint) { const h = document.createElement('p'); h.className = 'note'; h.textContent = S.hint; askBody.appendChild(h); }
   askConsent.hidden = !S.consent; askGo.textContent = j === N - 1 ? 'Request a seat' : 'Continue'; askGo.disabled = false;
-  const focusIt = () => { try { el.focus({ preventScroll: true }); } catch (e) {} };
-  ask.classList.remove('show'); ask.hidden = false;
-  if (reduce) { ask.classList.add('show'); focusIt(); return; }
-  // 1) the question rises off the origami, large and clear
-  const p = qAnchor(j); qpop.textContent = S.q; qpop.style.left = p.x + 'px'; qpop.style.top = p.y + 'px'; qpop.hidden = false; qpop.style.transform = '';
-  askQ.style.visibility = 'hidden'; qpop.classList.remove('in'); void qpop.offsetWidth; qpop.classList.add('in');
-  // 2) after a beat it glides into the answer card
-  setTimeout(() => flipToCard(focusIt), quick ? 450 : 800);
+  askQ.style.visibility = 'visible'; ask.classList.remove('show'); ask.hidden = false; void ask.offsetWidth; ask.classList.add('show');
+  setTimeout(() => { try { el.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 450);
 }
+function swapTo(j){ busy = true; ask.classList.remove('show'); setTimeout(() => { qi = j; paint(); openAsk(qi); }, reduce ? 0 : 380); }
 function validate(j, v){
   v = (v || '').trim(); const S = STEPS[j];
   if (S.k === 'age') { const n = Number(v); if (!v || !Number.isInteger(n) || n < 1 || n > 120) return 'Please enter your age as a whole number.'; }
@@ -270,34 +240,14 @@ async function submitAsk(){
     askGo.disabled = true; askGo.textContent = 'Sending…'; askErr.textContent = '';
     try { await sendRegistration({ name: answers.name, email: answers.email, age: answers.age, linkedin: answers.linkedin, links: answers.links || '', answer: answers.answer, ts: new Date().toISOString() }); }
     catch (e) { askErr.textContent = (e && e.message ? e.message : 'Something went wrong.') + ' Please try again in a moment.'; askGo.disabled = false; askGo.textContent = 'Request a seat'; return; }
+    busy = true; ask.classList.remove('show'); setTimeout(() => { ask.hidden = true; finish(); }, reduce ? 0 : 380); return;
   }
-  busy = true; ask.classList.remove('show'); ask.hidden = true; state = 'film';
-  playOn(vids[act], advance);
+  swapTo(j + 1);
 }
-function advance(){
-  qi++;
-  if (qi >= N) return finish();
-  const old = vids[act]; act = 1 - act; show(vids[act]);   // the next clip's first frame is already waiting
-  mount(old, CLIP(qi + 1 < N ? qi + 1 : qi), POSTER(qi + 1 < N ? qi + 1 : qi));
-  paint(); setTimeout(() => openAsk(qi), 150);
-}
-/* Back: the previous step plays in reverse (the paper unfolds), then its question returns with your answer still in place */
-function goBack(){
-  if (state !== 'ask' || busy || qi === 0) return;
-  busy = true; const j = qi - 1; state = 'film';
-  ask.classList.remove('show'); ask.hidden = true; qpop.hidden = true; paint();
-  const cur = vids[act], rev = vids[1 - act];
-  mount(rev, REV(j), POSTER(j + 1)); show(rev);
-  playOn(rev, () => {
-    // swap onto clip j's own first frame (identical image), then refill the spare with clip j+1
-    mount(cur, CLIP(j), POSTER(j)); show(cur);
-    mount(rev, CLIP(j + 1), POSTER(j + 1));
-    qi = j; paint(); setTimeout(() => openAsk(qi, true), 250);
-  });
-}
+function goBack(){ if (state !== 'ask' || busy || qi === 0) return; swapTo(qi - 1); }
 function finish(){
-  state = 'done'; ls.del(PKEY); if (answers.email) ls.set(DKEY, answers.email); paint(); ask.hidden = true;
-  document.querySelector('.film').classList.add('dim');
+  state = 'done'; qi = N - 1; ls.del(PKEY); if (answers.email) ls.set(DKEY, answers.email); paint(); ask.hidden = true;
+  film.classList.add('dim');
   $('envNote').textContent = 'A confirmation is on its way to ' + (answers.email || 'you') + '. If you’re accepted, the date lands on your calendar the moment it’s confirmed.';
   $('env').classList.add('on');
 }
@@ -305,19 +255,18 @@ askGo.addEventListener('click', submitAsk);
 askBack.addEventListener('click', goBack);
 ask.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); submitAsk(); } });
 
-/* ---------- boot: first clip waits on its opening frame while question one is asked ---------- */
+/* ---------- boot ---------- */
 if (/[?&]reset\b/.test(location.search)) { ls.del(PKEY); ls.del(DKEY); }
 const doneEmail = ls.get(DKEY), savedP = doneEmail ? null : loadProg();
-if (doneEmail) { answers.email = doneEmail; qi = N - 1; mount(vids[0], CLIP(N - 1), POSTER(N - 1)); mount(vids[1], CLIP(N - 1), POSTER(N - 1)); show(vids[0]); setTimeout(() => { $('loading').classList.add('off'); finish(); }, 600); }
-else {
+let started = false;
+const start = () => { if (started) return; started = true; $('loading').classList.add('off'); if (doneEmail) { answers.email = doneEmail; finish(); } else openAsk(qi); };
+if (!doneEmail) {
   if (savedP && savedP.qi > 0) { Object.assign(answers, savedP.answers); qi = savedP.qi; welcomeBack = true; }
   else if (savedP) { Object.assign(answers, savedP.answers); }
-  mount(vids[0], CLIP(qi), POSTER(qi)); mount(vids[1], CLIP(qi + 1 < N ? qi + 1 : qi), POSTER(qi + 1 < N ? qi + 1 : qi)); show(vids[0]); paint();
+  paint();
 }
-let started = !!doneEmail;
-const start = () => { if (started) return; started = true; $('loading').classList.add('off'); openAsk(qi); };
-vids[0].addEventListener('loadeddata', start); setTimeout(start, 4500);   // if the clip is slow, ask anyway
-window.__dbg = { advance, get state(){ return state; }, get qi(){ return qi; } };
+bg.addEventListener('loadeddata', () => setTimeout(start, 300)); setTimeout(start, 3500);   // if the film is slow, ask anyway
+window.__dbg = { get state(){ return state; }, get qi(){ return qi; } };
 </script>
 </body>
 </html>
