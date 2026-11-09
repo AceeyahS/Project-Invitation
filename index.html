@@ -60,14 +60,14 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 .glitch::before,.glitch::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;pointer-events:none;color:inherit;text-shadow:inherit;clip-path:inset(0 0 100% 0)}
 .glitch::before{animation:gl1 3.2s steps(1,end) infinite}
 .glitch::after{animation:gl2 3.2s steps(1,end) infinite}
-/* the line tears: a band of the text is cut out of the headline and slid sideways */
+/* vertical cuts: thin columns are sliced out of the headline right through the letters and slid up or down */
 @keyframes gb{0%,86%,94%,100%{clip-path:none}
- 87%{clip-path:polygon(evenodd,-5% -5%,105% -5%,105% 105%,-5% 105%,-5% -5%,-5% 12%,105% 12%,105% 38%,-5% 38%,-5% 12%,-5% 56%,105% 56%,105% 70%,-5% 70%,-5% 56%)}
- 89%{clip-path:polygon(evenodd,-5% -5%,105% -5%,105% 105%,-5% 105%,-5% -5%,-5% 58%,105% 58%,105% 86%,-5% 86%,-5% 58%,-5% 20%,105% 20%,105% 34%,-5% 34%,-5% 20%)}
- 91%{clip-path:polygon(evenodd,-5% -5%,105% -5%,105% 105%,-5% 105%,-5% -5%,-5% 30%,105% 30%,105% 60%,-5% 60%,-5% 30%,-5% 72%,105% 72%,105% 90%,-5% 90%,-5% 72%)}
- 93%{clip-path:polygon(evenodd,-5% -5%,105% -5%,105% 105%,-5% 105%,-5% -5%,-5% 44%,105% 44%,105% 52%,-5% 52%,-5% 44%)}}
-@keyframes gl1{0%,86%,94%,100%{clip-path:inset(0 0 100% 0)}87%{clip-path:inset(12% 0 62% 0);transform:translateX(-10px)}89%{clip-path:inset(58% 0 14% 0);transform:translateX(7px)}91%{clip-path:inset(30% 0 40% 0);transform:translateX(-6px)}93%{clip-path:inset(44% 0 48% 0);transform:translateX(12px)}}
-@keyframes gl2{0%,86%,94%,100%{clip-path:inset(0 0 100% 0)}87%{clip-path:inset(56% 0 30% 0);transform:translateX(8px)}89%{clip-path:inset(20% 0 66% 0);transform:translateX(-9px)}91%{clip-path:inset(72% 0 10% 0);transform:translateX(10px)}93%{clip-path:inset(0 0 100% 0)}}
+  87%{clip-path:polygon(evenodd,-5% -8%,105% -8%,105% 108%,-5% 108%,-5% -8%,18% -8%,22% -8%,22% 108%,18% 108%,18% -8%,76% -8%,79% -8%,79% 108%,76% 108%,76% -8%,47% -8%,53% -8%,53% 108%,47% 108%,47% -8%)}
+ 89%{clip-path:polygon(evenodd,-5% -8%,105% -8%,105% 108%,-5% 108%,-5% -8%,8% -8%,11% -8%,11% 108%,8% 108%,8% -8%,61% -8%,66% -8%,66% 108%,61% 108%,61% -8%,33% -8%,36% -8%,36% 108%,33% 108%,33% -8%,88% -8%,92% -8%,92% 108%,88% 108%,88% -8%)}
+ 91%{clip-path:polygon(evenodd,-5% -8%,105% -8%,105% 108%,-5% 108%,-5% -8%,26% -8%,31% -8%,31% 108%,26% 108%,26% -8%,52% -8%,55% -8%,55% 108%,52% 108%,52% -8%,70% -8%,76% -8%,76% 108%,70% 108%,70% -8%)}
+ 93%{clip-path:polygon(evenodd,-5% -8%,105% -8%,105% 108%,-5% 108%,-5% -8%,14% -8%,17% -8%,17% 108%,14% 108%,14% -8%,40% -8%,43% -8%,43% 108%,40% 108%,40% -8%,84% -8%,88% -8%,88% 108%,84% 108%,84% -8%,58% -8%,62% -8%,62% 108%,58% 108%,58% -8%)}}
+@keyframes gl1{0%,86%,94%,100%{clip-path:inset(0 0 100% 0)}87%{clip-path:polygon(evenodd,18% -8%,22% -8%,22% 108%,18% 108%,18% -8%,76% -8%,79% -8%,79% 108%,76% 108%,76% -8%);transform:translateY(-7px)}89%{clip-path:polygon(evenodd,8% -8%,11% -8%,11% 108%,8% 108%,8% -8%,61% -8%,66% -8%,66% 108%,61% 108%,61% -8%);transform:translateY(9px)}91%{clip-path:polygon(evenodd,26% -8%,31% -8%,31% 108%,26% 108%,26% -8%);transform:translateY(-9px)}93%{clip-path:polygon(evenodd,14% -8%,17% -8%,17% 108%,14% 108%,14% -8%,40% -8%,43% -8%,43% 108%,40% 108%,40% -8%,84% -8%,88% -8%,88% 108%,84% 108%,84% -8%);transform:translateY(6px)}}
+@keyframes gl2{0%,86%,94%,100%{clip-path:inset(0 0 100% 0)}87%{clip-path:polygon(evenodd,47% -8%,53% -8%,53% 108%,47% 108%,47% -8%);transform:translateY(8px)}89%{clip-path:polygon(evenodd,33% -8%,36% -8%,36% 108%,33% 108%,33% -8%,88% -8%,92% -8%,92% 108%,88% 108%,88% -8%);transform:translateY(-8px)}91%{clip-path:polygon(evenodd,52% -8%,55% -8%,55% 108%,52% 108%,52% -8%,70% -8%,76% -8%,76% 108%,70% 108%,70% -8%);transform:translateY(7px)}93%{clip-path:polygon(evenodd,58% -8%,62% -8%,62% 108%,58% 108%,58% -8%);transform:translateY(-10px)}}
 @media (prefers-reduced-motion:reduce){.glitch,.glitch::before,.glitch::after{animation:none}.glitch::before,.glitch::after{display:none}}
 .ask h3.long{font-size:clamp(16px,1.45vw,21px);line-height:1.15;margin:16px 0 20px}
 .ask h3{font-family:var(--serif);font-stretch:125%;font-weight:800;text-transform:uppercase;font-size:clamp(22px,2.1vw,31px);line-height:1.08;margin:20px 0 26px;color:var(--cream);letter-spacing:.005em;text-shadow:2px 2px 0 var(--red)}
