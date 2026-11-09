@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Interest Form</title>
 <meta name="description" content="An invitation to a small reading group on robotics and manufacturing. Answer six questions to request a seat.">
-<meta name="theme-color" content="#2237ff">
+<meta name="theme-color" content="#0b0b0b">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Interest Form">
 <meta property="og:description" content="An invitation to a small reading group on robotics and manufacturing. Answer six questions to request a seat.">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232237ff'/%3E%3Crect x='16' y='16' width='32' height='32' fill='none' stroke='%23c9ff1a' stroke-width='5'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0b'/%3E%3Crect x='16' y='16' width='32' height='32' fill='none' stroke='%23c9ff1a' stroke-width='5'/%3E%3C/svg%3E">
 <link rel="preload" href="fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/space-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -46,22 +46,32 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 /* ---- the question card: poster-blue stock, same paper grain, lime accents, hard red offset on the type ---- */
 .ask{position:fixed;z-index:20;right:max(24px,5vw);top:50%;transform:translateY(-50%);width:min(440px,40vw);padding:clamp(40px,4vw,58px) clamp(30px,3.2vw,48px) clamp(32px,3.2vw,46px);text-align:left;max-height:90vh;overflow:auto;
   background:
-   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.55 .9' numOctaves='5' seed='8'/><feColorMatrix values='0 0 0 0 .92  0 0 0 0 .92  0 0 0 0 .9  0 0 0 .16 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.55 .9' numOctaves='5' seed='8'/><feColorMatrix values='0 0 0 0 .92  0 0 0 0 .92  0 0 0 0 .9  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='500'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .1 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>"),
-   var(--blue);
-  border:0;box-shadow:0 40px 60px -30px rgba(0,0,0,.85),0 2px 4px rgba(0,0,0,.45)}
-.ask::after{content:"";position:absolute;inset:12px;border:1px solid rgba(244,244,238,.28);pointer-events:none}
+   #0d0d0d;
+  border:1px solid rgba(244,244,238,.1);box-shadow:0 40px 60px -30px rgba(0,0,0,.85),0 2px 4px rgba(0,0,0,.45)}
+.ask::after{content:"";position:absolute;inset:12px;border:1px solid rgba(201,255,26,.3);pointer-events:none}
 .ask>*{position:relative}
 .seal{display:none}
 .ask.in{animation:cardin 1.1s cubic-bezier(.2,.7,.2,1) both}
 @keyframes cardin{from{opacity:0;transform:translateY(-49%)}to{opacity:1;transform:translateY(-50%)}}
 .ask .mono{display:inline-block;font-family:var(--cond);font-size:15px;letter-spacing:.07em;font-weight:400;color:#0b0b0b;background:var(--lime);padding:3px 10px 2px}
+.glitch{position:relative}
+.glitch::before,.glitch::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;pointer-events:none;text-shadow:none;opacity:.95;mix-blend-mode:screen}
+.glitch::before{color:var(--red);transform:translateX(-3px);animation:gl1 3.2s steps(1,end) infinite}
+.glitch::after{color:#00e5ff;transform:translateX(3px);animation:gl2 3.2s steps(1,end) infinite .4s}
+@keyframes gl1{0%,86%{clip-path:inset(0 0 100% 0)}87%{clip-path:inset(12% 0 62% 0);transform:translateX(-7px)}89%{clip-path:inset(58% 0 14% 0);transform:translateX(5px)}91%{clip-path:inset(30% 0 40% 0);transform:translateX(-4px)}93%,100%{clip-path:inset(0 0 100% 0)}}
+@keyframes gl2{0%,82%{clip-path:inset(0 0 100% 0)}83%{clip-path:inset(40% 0 38% 0);transform:translateX(6px)}85%{clip-path:inset(8% 0 76% 0);transform:translateX(-5px)}88%{clip-path:inset(66% 0 6% 0);transform:translateX(7px)}90%,100%{clip-path:inset(0 0 100% 0)}}
+@keyframes jit{0%,92%,100%{transform:none}93%{transform:translate(2px,-1px) skewX(-4deg)}95%{transform:translate(-2px,1px) skewX(3deg)}97%{transform:none}}
+.ask h3.glitch{animation:jit 3.2s steps(1,end) infinite .2s}
+@media (prefers-reduced-motion:reduce){.glitch::before,.glitch::after,.ask h3.glitch{animation:none}.glitch::before,.glitch::after{display:none}}
+.ask h3.long{font-size:clamp(16px,1.45vw,21px);line-height:1.15;margin:16px 0 20px}
 .ask h3{font-family:var(--serif);font-stretch:125%;font-weight:800;text-transform:uppercase;font-size:clamp(22px,2.1vw,31px);line-height:1.08;margin:20px 0 26px;color:var(--cream);letter-spacing:.005em;text-shadow:2px 2px 0 var(--red)}
-.ask input,.ask textarea{width:100%;background:rgba(5,10,60,.28);border:0;border-bottom:3px solid var(--lime);padding:11px 10px;font-family:var(--mono);font-size:18px;text-align:left;color:var(--cream);outline:none;border-radius:0;transition:background .3s}
-.ask textarea{resize:none;min-height:96px;line-height:1.5;font-size:15px;text-align:left;border:1px solid rgba(244,244,238,.5);border-bottom:3px solid var(--lime);padding:12px 12px}
+.ask input,.ask textarea{width:100%;background:rgba(244,244,238,.06);border:0;border-bottom:3px solid var(--lime);padding:11px 10px;font-family:var(--mono);font-size:18px;text-align:left;color:var(--cream);outline:none;border-radius:0;transition:background .3s}
+.ask textarea{resize:none;min-height:96px;line-height:1.5;font-size:15px;text-align:left;border:1px solid rgba(244,244,238,.28);border-bottom:3px solid var(--lime);padding:12px 12px}
 .ask textarea.big{min-height:160px}
 .ask input::placeholder,.ask textarea::placeholder{color:rgba(244,244,238,.4)}
-.ask input:focus,.ask textarea:focus{background:rgba(5,10,60,.45)}
+.ask input:focus,.ask textarea:focus{background:rgba(244,244,238,.11)}
 .ask input[type=number]{max-width:140px;display:block;margin:0;-moz-appearance:textfield}.ask input::-webkit-outer-spin-button,.ask input::-webkit-inner-spin-button{-webkit-appearance:none}
 .note{font-family:var(--mono);font-size:12px;color:rgba(244,244,238,.82);margin-top:14px;line-height:1.55}
 .err{font-family:var(--mono);color:#ffe14a;font-size:12px;font-weight:700;min-height:1.3em;margin-top:10px}
@@ -92,8 +102,8 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 @keyframes envin{from{opacity:0;transform:translate(-50%,-47%)}to{opacity:1;transform:translate(-50%,-50%)}}
 .env .paper{position:absolute;inset:0;--r:0px;
   background:
-   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.6 .85' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 .95  0 0 0 0 .95  0 0 0 0 .92  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
-   linear-gradient(165deg,#2a40ff,#1a2bd6);
+   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.6 .85' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 .95  0 0 0 0 .95  0 0 0 0 .92  0 0 0 .24 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+   linear-gradient(165deg,#181818,#0b0b0b);
   -webkit-mask:radial-gradient(circle at 50% 34%,transparent var(--r),#000 calc(var(--r) + 1.2px));mask:radial-gradient(circle at 50% 34%,transparent var(--r),#000 calc(var(--r) + 1.2px))}
 .env .paper{-webkit-mask:none!important;mask:none!important}
 @keyframes moon{to{--r:clamp(34px,6.4vw,54px)}}
@@ -133,7 +143,7 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
   <button class="back" id="askBack" type="button" hidden>‹ Back</button>
   <div class="seal" aria-hidden="true"></div>
   <p class="mono" id="askK"></p>
-  <h3 id="askQ"></h3>
+  <h3 id="askQ" class="glitch" data-t=""></h3>
   <div id="askBody"></div>
   <div class="err" id="askErr" role="alert"></div>
   <label class="check" id="askConsent" hidden><input id="consentBox" type="checkbox"><span>I’m happy to be emailed about this event. My details are kept by the organizers only to run the group. <a class="contact" href="#" data-c="1">Questions or removal requests</a>.</span></label>
@@ -143,9 +153,9 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 </main>
 <div class="env" id="env" role="status" aria-live="polite">
   <div class="paper"></div>
-  <svg class="crease" viewBox="0 0 100 78" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 L50 36 L100 0" fill="none" stroke="rgba(5,10,60,.6)" stroke-width=".25"/></svg>
+  <svg class="crease" viewBox="0 0 100 78" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 L50 36 L100 0" fill="none" stroke="rgba(244,244,238,.22)" stroke-width=".25"/></svg>
   <div class="ring"></div>
-  <div class="msg"><h2>Your name is in the book.</h2><p id="envNote"></p><p class="fine"><a class="contact" href="#" data-c="1">Questions or want your details removed?</a></p></div>
+  <div class="msg"><h2 class="glitch" data-t="Your name is in the book.">Your name is in the book.</h2><p id="envNote"></p><p class="fine"><a class="contact" href="#" data-c="1">Questions or want your details removed?</a></p></div>
   <div class="stamp" aria-hidden="true"></div>
 </div>
 <div class="loading" id="loading" aria-hidden="true"><p class="mono">Interest Form</p></div>
@@ -169,14 +179,14 @@ async function sendRegistration(v){
   return { ok: true };
 }
 
-/* ---------- the six questions (same wording the engraved paper shows) ---------- */
+/* ---------- the six questions ---------- */
 const STEPS = [
   { k: 'age',      q: 'First, how old are you?', type: 'number', hint: 'A small thing before anything else.' },
   { k: 'name',     q: 'What is your name?', type: 'text', auto: 'name', max: 120 },
   { k: 'email',    q: 'Where can the invitation find you?', type: 'email', auto: 'email', hint: 'For your confirmation and the calendar invite.', max: 200 },
   { k: 'linkedin', q: 'Show us where you work in public.', type: 'url', ph: 'https://linkedin.com/in/…', hint: 'Your LinkedIn profile.', max: 300 },
   { k: 'links',    q: 'Anything else worth seeing?', type: 'area', hint: 'A site, a paper, a repo. One per line. Optional.', max: 1200, rows: 3 },
-  { k: 'answer',   q: 'What is the first machine you would build?', type: 'area', big: true, max: 1500, rows: 6, consent: true, hint: 'You are handed a factory that can make anything except itself. Which assumption in your answer is most likely to be wrong?' }
+  { k: 'answer',   q: 'Name a robot demo you believe and one you don’t. What would you ask the team to show you before you changed your mind?', type: 'area', big: true, max: 1500, rows: 6, consent: true, hint: 'A line or two on each is plenty. The flip is the part we read.' }
 ];
 const N = STEPS.length, answers = {};
 /* contact address is assembled in script so it never sits in the page source as plain text */
@@ -204,9 +214,10 @@ function paint(){ [...prog.children].forEach((d, i) => { d.className = i < qi ? 
 
 /* ---------- the question card ---------- */
 const ask = $('ask'), askK = $('askK'), askQ = $('askQ'), askBody = $('askBody'), askErr = $('askErr'), askGo = $('askGo'), askConsent = $('askConsent'), consentBox = $('consentBox'), askBack = $('askBack');
+function setQ(t){ askQ.textContent = t; askQ.dataset.t = t; askQ.classList.toggle('long', t.length > 70); }
 function openAsk(j){
   const S = STEPS[j]; state = 'ask'; busy = false; paint();
-  askK.textContent = `${['I','II','III','IV','V','VI'][j]} of VI` + (welcomeBack ? ' · welcome back' : ''); welcomeBack = false; askQ.textContent = S.q; askErr.textContent = ''; askBody.innerHTML = ''; askGo.hidden = false; askBack.hidden = j === 0;
+  askK.textContent = `${['I','II','III','IV','V','VI'][j]} of VI` + (welcomeBack ? ' · welcome back' : ''); welcomeBack = false; setQ(S.q); askErr.textContent = ''; askBody.innerHTML = ''; askGo.hidden = false; askBack.hidden = j === 0;
   let el;
   if (S.type === 'area') { el = document.createElement('textarea'); el.rows = S.rows || 3; if (S.big) el.className = 'big'; }
   else { el = document.createElement('input'); el.type = S.type; if (S.type === 'number') { el.min = 1; el.max = 120; el.inputMode = 'numeric'; } }
@@ -229,7 +240,7 @@ function validate(j, v){
 }
 function block(){
   state = 'blocked'; ls.del(PKEY); for (const k in answers) delete answers[k];
-  askK.textContent = 'Closed'; askQ.textContent = 'This group is for readers 13 and older.';
+  askK.textContent = 'Closed'; setQ('This group is for readers 13 and older.');
   askBody.innerHTML = '<p class="note">Nothing you typed has been saved or sent anywhere. Thank you for stopping by.</p>'; askErr.textContent = ''; askConsent.hidden = true; askGo.hidden = true;
 }
 async function submitAsk(){
