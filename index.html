@@ -31,6 +31,7 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 .film{position:fixed;inset:0;background:var(--night)}
 .film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:35% 50%;opacity:1;transition:opacity .9s ease;background:var(--night)}
 .film video.fade{opacity:0}
+.film canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;mix-blend-mode:screen}
 .film::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 40% 45%,transparent 55%,rgba(5,7,10,.45) 100%)}
 
 /* ---- host line + skip ---- */
@@ -217,7 +218,7 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 </style>
 </head>
 <body>
-<div class="film" aria-hidden="true"><video id="bg" muted playsinline autoplay preload="auto" disablepictureinpicture></video></div>
+<div class="film" aria-hidden="true"><video id="bg" muted playsinline autoplay preload="auto" disablepictureinpicture></video><canvas id="asc"></canvas></div>
 <div class="prog" id="prog" aria-hidden="true"></div>
 <div class="host"><p class="mono">Hosted by</p><p><a id="hostA" href="#" target="_blank" rel="noopener noreferrer">Will Sentance</a></p></div>
 
@@ -292,6 +293,34 @@ let fading = false;
 bg.addEventListener('timeupdate', () => { if (!fading && isFinite(bg.duration) && bg.duration - bg.currentTime < .9) { fading = true; bg.classList.add('fade'); } });
 bg.addEventListener('ended', () => { bg.currentTime = 0; const p = bg.play(); if (p && p.catch) p.catch(() => {}); setTimeout(() => { bg.classList.remove('fade'); fading = false; }, 200); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !reduce && bg.paused) { const p = bg.play(); if (p && p.catch) p.catch(() => {}); } });
+/* ---------- ascii layer: the film re-typed as terminal glyphs, tying the backdrop to the form ---------- */
+(function(){
+  const cv = document.getElementById('asc'); if (!cv || reduce) return;
+  const cx = cv.getContext('2d'), sm = document.createElement('canvas'), sx = sm.getContext('2d', { willReadFrequently: true });
+  const RAMP = ' .,:;-=+*#%@', CW = 11, CH = 19; let cols = 0, rows = 0, dpr = 1, last = 0, dead = false;
+  function size(){
+    dpr = Math.min(devicePixelRatio || 1, 2); const w = innerWidth, h = innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr; cols = Math.ceil(w / CW); rows = Math.ceil(h / CH); sm.width = cols; sm.height = rows;
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.font = '700 ' + (CH - 4) + 'px "Space Mono", monospace'; cx.textBaseline = 'top';
+  }
+  size(); addEventListener('resize', size);
+  function frame(t){
+    requestAnimationFrame(frame);
+    if (dead || document.hidden || t - last < 100 || bg.readyState < 2 || !bg.videoWidth) return; last = t;
+    const vw = bg.videoWidth, vh = bg.videoHeight, W = innerWidth, H = innerHeight, sc = Math.max(W / vw, H / vh);
+    const px = innerWidth < 700 ? .22 : .35, sw = W / sc, sh = H / sc, sxo = (vw - sw) * px, syo = (vh - sh) * .5;
+    let d; try { sx.drawImage(bg, sxo, syo, sw, sh, 0, 0, cols, rows); d = sx.getImageData(0, 0, cols, rows).data; } catch (e) { dead = true; cv.remove(); return; }
+    cx.clearRect(0, 0, W, H);
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const i = (y * cols + x) * 4, l = (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255;
+      if (l < .3) continue;
+      const k = Math.min(RAMP.length - 1, ((l - .3) / .7 * RAMP.length) | 0); if (!k) continue;
+      cx.fillStyle = l > .8 ? 'rgba(201,255,26,.85)' : 'rgba(190,215,255,' + (.3 + .55 * l).toFixed(2) + ')';
+      cx.fillText(RAMP[k], x * CW, y * CH);
+    }
+  }
+  requestAnimationFrame(frame);
+})();
 const prog = $('prog'); for (let i = 0; i < N; i++) prog.appendChild(document.createElement('i'));
 function paint(){ [...prog.children].forEach((d, i) => { d.className = i < qi ? 'd' : (i === qi && state !== 'done' ? 'c' : (state === 'done' ? 'd' : '')); }); }
 
