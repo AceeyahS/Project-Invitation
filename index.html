@@ -297,11 +297,11 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !r
 (function(){
   const cv = document.getElementById('asc'); if (!cv || reduce) return;
   const cx = cv.getContext('2d'), sm = document.createElement('canvas'), sx = sm.getContext('2d', { willReadFrequently: true });
-  const RAMP = ' .,:;-=+*#%@', CW = 11, CH = 19; let cols = 0, rows = 0, dpr = 1, last = 0, dead = false;
+  const RAMP = ' .:-=+*#%@@', CW = 12, CH = 20; let cols = 0, rows = 0, dpr = 1, last = 0, dead = false;
   function size(){
     dpr = Math.min(devicePixelRatio || 1, 2); const w = innerWidth, h = innerHeight;
     cv.width = w * dpr; cv.height = h * dpr; cols = Math.ceil(w / CW); rows = Math.ceil(h / CH); sm.width = cols; sm.height = rows;
-    cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.font = '700 ' + (CH - 4) + 'px "Space Mono", monospace'; cx.textBaseline = 'top';
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.font = '700 ' + (CH - 3) + 'px "Space Mono", monospace'; cx.textBaseline = 'top';
   }
   size(); addEventListener('resize', size);
   function frame(t){
@@ -313,9 +313,9 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !r
     cx.clearRect(0, 0, W, H);
     for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
       const i = (y * cols + x) * 4, l = (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255;
-      if (l < .3) continue;
-      const k = Math.min(RAMP.length - 1, ((l - .3) / .7 * RAMP.length) | 0); if (!k) continue;
-      cx.fillStyle = l > .8 ? 'rgba(201,255,26,.85)' : 'rgba(190,215,255,' + (.3 + .55 * l).toFixed(2) + ')';
+      if (l < .22) continue;
+      const k = Math.min(RAMP.length - 1, ((l - .22) / .78 * RAMP.length) | 0); if (!k) continue;
+      cx.fillStyle = l > .7 ? 'rgba(201,255,26,.95)' : 'rgba(190,215,255,' + (.55 + .45 * l).toFixed(2) + ')';
       cx.fillText(RAMP[k], x * CW, y * CH);
     }
   }
