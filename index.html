@@ -315,7 +315,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !r
       const i = (y * cols + x) * 4, l = (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255;
       if (l < .22) continue;
       const k = Math.min(RAMP.length - 1, ((l - .22) / .78 * RAMP.length) | 0); if (!k) continue;
-      cx.fillStyle = l > .7 ? 'rgba(201,255,26,.95)' : 'rgba(190,215,255,' + (.55 + .45 * l).toFixed(2) + ')';
+      cx.fillStyle = l > .7 ? 'rgba(201,255,26,.95)' : 'rgba(222,228,238,' + (.55 + .45 * l).toFixed(2) + ')';
       cx.fillText(RAMP[k], x * CW, y * CH);
     }
   }

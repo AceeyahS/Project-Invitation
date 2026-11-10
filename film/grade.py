@@ -1,7 +1,8 @@
-import numpy as np, sys
+import numpy as np, sys, os
 from PIL import Image, ImageFilter
+BLACK=[(0,(0,0,0)),(.18,(7,9,13)),(.45,(44,50,60)),(.72,(135,146,162)),(.9,(216,223,233)),(1,(247,249,252))]
 def ramp(l):
-    st=[(0,(0,6,28)),(.18,(2,22,78)),(.45,(14,62,150)),(.72,(86,140,215)),(.9,(205,222,245)),(1,(247,249,252))]
+    st=BLACK if os.environ.get('GRADE')=='black' else [(0,(0,6,28)),(.18,(2,22,78)),(.45,(14,62,150)),(.72,(86,140,215)),(.9,(205,222,245)),(1,(247,249,252))]
     xs=[s[0] for s in st]; out=np.zeros(l.shape+(3,))
     for c in range(3): out[...,c]=np.interp(l,xs,[s[1][c] for s in st])
     return out
