@@ -71,6 +71,9 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 @keyframes gl1{0%,86%,94%,100%{clip-path:inset(0 0 100% 0)}87%{clip-path:polygon(evenodd,18% -8%,22% -8%,22% 108%,18% 108%,18% -8%,76% -8%,79% -8%,79% 108%,76% 108%,76% -8%);transform:translateY(-7px)}89%{clip-path:polygon(evenodd,8% -8%,11% -8%,11% 108%,8% 108%,8% -8%,61% -8%,66% -8%,66% 108%,61% 108%,61% -8%);transform:translateY(9px)}91%{clip-path:polygon(evenodd,26% -8%,31% -8%,31% 108%,26% 108%,26% -8%);transform:translateY(-9px)}93%{clip-path:polygon(evenodd,14% -8%,17% -8%,17% 108%,14% 108%,14% -8%,40% -8%,43% -8%,43% 108%,40% 108%,40% -8%,84% -8%,88% -8%,88% 108%,84% 108%,84% -8%);transform:translateY(6px)}}
 @keyframes gl2{0%,86%,94%,100%{clip-path:inset(0 0 100% 0)}87%{clip-path:polygon(evenodd,47% -8%,53% -8%,53% 108%,47% 108%,47% -8%);transform:translateY(8px)}89%{clip-path:polygon(evenodd,33% -8%,36% -8%,36% 108%,33% 108%,33% -8%,88% -8%,92% -8%,92% 108%,88% 108%,88% -8%);transform:translateY(-8px)}91%{clip-path:polygon(evenodd,52% -8%,55% -8%,55% 108%,52% 108%,52% -8%,70% -8%,76% -8%,76% 108%,70% 108%,70% -8%);transform:translateY(7px)}93%{clip-path:polygon(evenodd,58% -8%,62% -8%,62% 108%,58% 108%,58% -8%);transform:translateY(-10px)}}
 @media (prefers-reduced-motion:reduce){.glitch,.glitch::before,.glitch::after{animation:none}.glitch::before,.glitch::after{display:none}}
+.ask h3 .tw-c{display:inline-block;margin-left:.04em;color:var(--lime);text-shadow:none;animation:twb 1s steps(1,end) infinite}
+.ask h3 .tw-r{visibility:hidden}
+@keyframes twb{0%,55%{opacity:1}56%,100%{opacity:0}}
 .ask h3.long{font-size:clamp(22px,2vw,28px);line-height:1.1;margin:16px 0 20px}
 .ask h3{font-family:var(--head);font-weight:400;text-transform:uppercase;font-size:clamp(34px,3.2vw,48px);line-height:1.08;margin:20px 0 26px;color:var(--cream);letter-spacing:.02em;text-shadow:2px 2px 0 var(--red)}
 .ask input,.ask textarea{width:100%;background:rgba(244,244,238,.06);border:0;border-bottom:3px solid var(--lime);padding:11px 10px;font-family:var(--mono);font-size:18px;text-align:left;color:var(--cream);outline:none;border-radius:0;transition:background .3s}
@@ -137,6 +140,68 @@ html,body{height:100%;background:var(--night);color:var(--cream);font-family:var
 @keyframes qrise{from{opacity:0;transform:translate(-50%,-38%);filter:blur(6px)}to{opacity:1;transform:translate(-50%,-50%);filter:blur(0)}}
 @media (max-width:800px){.ask{transform:translateX(-50%)}}
 .contact{color:inherit;opacity:.7;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}.contact:hover{opacity:1}.fine{font-size:.8em;opacity:.8;margin-top:.9em}
+
+/* ================= terminal skin: the question card as a wide black shell window, white mono text ================= */
+.ask{
+  left:50%;right:auto;top:50%;bottom:auto;transform:translate(-50%,-50%);
+  width:min(960px,92vw);max-height:86vh;padding:58px clamp(20px,3vw,40px) 26px;border-radius:7px;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:24px;align-items:start;
+  background:#000;border:1px solid rgba(255,255,255,.38);color:#fff;font-family:var(--mono);
+  box-shadow:0 0 0 1px rgba(0,0,0,.9),0 0 46px rgba(255,255,255,.07),0 40px 70px -20px rgba(0,0,0,.95);
+}
+.ask::before{ /* title bar: three dots + fake session name */
+  content:"root@interest-form:~# ./request_access --seat 1";position:absolute;left:0;right:0;top:0;height:36px;line-height:36px;padding-left:78px;padding-right:84px;
+  font:12px/36px var(--mono);letter-spacing:.06em;color:rgba(255,255,255,.55);border-bottom:1px solid rgba(255,255,255,.22);
+  background:radial-gradient(circle at 18px 18px,#fff 5px,transparent 5.6px),radial-gradient(circle at 38px 18px,rgba(255,255,255,.55) 5px,transparent 5.6px),radial-gradient(circle at 58px 18px,rgba(255,255,255,.28) 5px,transparent 5.6px),#0a0a0a;
+  border-radius:7px 7px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ask::after{ /* CRT scanlines over the whole window */
+  inset:0;border:0;border-radius:7px;pointer-events:none;z-index:4;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);animation:flick 5s steps(1,end) infinite;
+}
+@keyframes flick{0%,92%,100%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+.ask.show{animation:crton .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes crton{0%{transform:translate(-50%,-50%) scale(.6,.012);filter:brightness(3)}55%{transform:translate(-50%,-50%) scale(1,.02);filter:brightness(2.2)}100%{transform:translate(-50%,-50%) scale(1,1);filter:none}}
+.ask .mono{grid-column:1/-1;grid-row:1;font-size:12px;letter-spacing:.12em;color:rgba(255,255,255,.55);font-weight:400}
+.ask .mono b{background:none;padding:0;margin:0 2px 0 0;font-weight:400;color:rgba(255,255,255,.55)}
+.ask .mono b::before{content:"["}.ask .mono b::after{content:"]"}
+.ask h3#askQ{grid-column:1/-1;grid-row:2;font-family:var(--mono);text-transform:none;font-weight:500;letter-spacing:-.01em;color:#fff;text-shadow:0 0 10px rgba(255,255,255,.35);
+  font-size:clamp(17px,2.1vw,26px);line-height:1.35;margin:14px 0 22px;padding-left:1.4em;text-indent:-1.4em}
+.ask h3#askQ.long{font-size:clamp(16px,1.8vw,22px);line-height:1.45}
+.ask h3#askQ .tw-t::before{content:"$ ";color:rgba(255,255,255,.55)}
+.ask h3 .tw-c{text-indent:0;color:#fff;margin-left:.05em;animation:twb 1s steps(1,end) infinite;text-shadow:0 0 8px rgba(255,255,255,.7)}
+.glitch::before,.glitch::after{text-shadow:-2px 0 rgba(255,60,60,.8),2px 0 rgba(60,200,255,.8)}
+#askBody{grid-column:1;grid-row:3;position:relative;padding-left:24px}
+#askBody::before{content:">";position:absolute;left:0;top:11px;font:700 18px var(--mono);color:#fff}
+.ask input,.ask textarea{background:transparent;border:0;border-bottom:1px dashed rgba(255,255,255,.5);color:#fff;caret-color:#fff;font-size:18px;padding:11px 4px;text-shadow:0 0 6px rgba(255,255,255,.25)}
+.ask textarea{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.03);font-size:15px;line-height:1.55;padding:11px 12px}
+.ask input:focus,.ask textarea:focus{background:rgba(255,255,255,.05);border-color:#fff}
+.ask input::placeholder,.ask textarea::placeholder{color:rgba(255,255,255,.3)}
+.ask input[type=number]{max-width:240px}
+.ask .note{font-size:12px;color:rgba(255,255,255,.5);margin-top:12px}.ask .note::before{content:"# "}
+.ask .err{grid-column:1/-1;grid-row:4;color:#ff6b6b;margin-top:12px}.ask .err:not(:empty)::before{content:"ERR: "}
+.ask .check{grid-column:1/-1;grid-row:5;color:rgba(255,255,255,.7);margin-top:14px}.ask .check input{accent-color:#fff}
+.ask .btn{grid-column:2;grid-row:3;align-self:start;margin:0;font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;color:#fff;border:1px solid #fff;padding:12px 18px;transition:background .15s,color .15s}
+.ask .btn::before{content:"[↵] "}
+.ask .btn:hover{background:#fff;color:#000;transform:none;box-shadow:0 0 18px rgba(255,255,255,.5)}
+.ask:has(textarea) .btn{align-self:end}
+.ask .back{left:auto;right:14px;top:6px;color:rgba(255,255,255,.55);font-size:11px;z-index:5}.ask .back:hover{color:#fff}
+.ask :focus-visible{outline:1px solid #fff;outline-offset:3px}
+@media (max-width:800px){
+  .ask{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);width:94vw;max-height:84vh;grid-template-columns:1fr;padding-top:54px}
+  .ask::before{padding-left:70px;font-size:11px}
+  .ask .btn{grid-column:1;grid-row:6;margin-top:16px;align-self:stretch;text-align:center}
+  .ask:has(textarea) .btn{align-self:stretch}
+  .ask.show{animation:none}
+}
+@media (prefers-reduced-motion:reduce){.ask.show,.ask::after{animation:none}.ask h3 .tw-c{animation:none}}
+/* terminal palette: lime accents outside the card go white */
+.prog i.d{background:#fff}.prog i.c{background:rgba(255,255,255,.55)}
+.host a{border-bottom:1px solid #fff}
+.loading .mono{color:#fff;text-shadow:0 0 10px rgba(255,255,255,.4)}
+:focus-visible{outline-color:#fff}
+.env .stamp{border-color:#fff}
 </style>
 </head>
 <body>
@@ -220,7 +285,17 @@ function paint(){ [...prog.children].forEach((d, i) => { d.className = i < qi ? 
 
 /* ---------- the question card ---------- */
 const ask = $('ask'), askK = $('askK'), askQ = $('askQ'), askBody = $('askBody'), askErr = $('askErr'), askGo = $('askGo'), askConsent = $('askConsent'), consentBox = $('consentBox'), askBack = $('askBack');
-function setQ(t){ askQ.textContent = t; askQ.dataset.t = t; askQ.classList.toggle('long', t.length > 70); }
+/* typewriter: the question types itself out one character at a time with a blinking _ cursor (after Originkit's Typewriter). Unrevealed text is kept in the flow, hidden, so the card never reflows while it types. */
+let twTimer = 0;
+function setQ(t){
+  clearTimeout(twTimer);
+  askQ.classList.toggle('long', t.length > 70); askQ.setAttribute('aria-label', t);
+  if (reduce) { askQ.textContent = t; askQ.dataset.t = t; return; }
+  askQ.innerHTML = '<span class="tw-t" aria-hidden="true"></span><span class="tw-c" aria-hidden="true">█</span><span class="tw-r" aria-hidden="true"></span>';
+  const a = askQ.firstChild, r = askQ.lastChild, per = Math.max(22, Math.min(55, 3200 / t.length));
+  let i = 0; askQ.dataset.t = ''; r.textContent = t;
+  twTimer = setTimeout(function tick(){ i++; a.textContent = t.slice(0, i); r.textContent = t.slice(i); askQ.dataset.t = t.slice(0, i); if (i < t.length) twTimer = setTimeout(tick, per); else askQ.dataset.t = t; }, reduce ? 0 : 420);
+}
 function openAsk(j){
   const S = STEPS[j]; state = 'ask'; busy = false; paint();
   askK.innerHTML = `<b>${['I','II','III','IV','V','VI'][j]}</b><b>OF</b><b>VI</b>` + (welcomeBack ? '<b>BACK</b>' : ''); welcomeBack = false; setQ(S.q); askErr.textContent = ''; askBody.innerHTML = ''; askGo.hidden = false; askBack.hidden = j === 0;
